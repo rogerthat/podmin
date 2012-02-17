@@ -6,8 +6,7 @@
 
 #
 
-import MySQLdb, time, binascii, socket, string, thread, sys, httplib, urllib, urllib2, getopt, re, os
-import smtplib, socket
+import time, socket, string, sys, httplib, urllib, urllib2, getopt, os
 
 
 import users
