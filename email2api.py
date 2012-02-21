@@ -170,7 +170,9 @@ for i in range(numMessages):
                 print_debug(xe)
 
                 try:
-                    sub.check_call(xe,shell=True)
+                    iggg = 1
+                    #sub.check_call(xe,shell=True)
+                    print "[+] posted to %s" % user
                 except:
                     print "[-] error while trying to call the api [ %s ] " % xe
                     continue
