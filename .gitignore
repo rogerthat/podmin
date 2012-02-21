@@ -1,0 +1,7 @@
+#
+# podmin - gitignore
+#
+
+conf/*.py
+*.pyc
+workshell.env
