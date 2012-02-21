@@ -30,9 +30,9 @@ USAGE
             - send the text given via -t (if more than one word it must be escaped via 
               "more than one word"
 
+    $ ./apispora.py -l
+            - list available accounts from users.py 
 
-    APISPORA - some tools to post to diaspora via api
-               supports right now only pisotsapi 
     
     
     OPTIONS:

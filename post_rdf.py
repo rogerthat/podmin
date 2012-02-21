@@ -1,19 +1,22 @@
 #!/usr/bin/python
 #
 #
-# get stuff from the stream an post to pisto-api
+# get stuff from the stream an post to apispora
+#
+# please note, this needs a db that is not qet available
+# for you
+#
 
 
 import MySQLdb, time
 import subprocess as sub
 
-from pisto_api import *
+from apispora import *
 
 from rdf_config import *
 
-api = "./pistos_api.py"
+api = "./apispora.py.py"
 
-bot="spambot@c0unt.org"
 
 providers = ""
 bot = ""

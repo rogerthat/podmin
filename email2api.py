@@ -161,6 +161,11 @@ for i in range(numMessages):
             last_date = date
             msg  = message.get_payload().replace("\"", "'")
             if subj.find(post_identifier) > -1:
+                try:
+                    # in case the footer is corrupt
+                    msg = "%s \n%s" % (msg, mail_footer)
+                except:
+                    pass
                 xe = """%s -u %s -t "%s" """ % (apispora, user, msg)
                 print_debug(xe)
 
@@ -172,7 +177,7 @@ for i in range(numMessages):
 
                 if delete_mails == "yes":
                     M.dele(i+1)
-
+            time.sleep(6)
                 
 M.quit()
 
