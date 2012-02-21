@@ -1,7 +1,8 @@
 #!/usr/bin/python
 #
 #
-# pisto-api 
+# apispora - a little script to post to diaspora using an
+# api, right now only working with pistosapi
 # 
 
 #
@@ -12,7 +13,7 @@ sys.path.append("conf")
 
 import users
 
-this_version= " v0.1.2 alpha"
+this_version= " v0.1.4 alpha"
 
 debug = "yes"
 
@@ -20,14 +21,16 @@ api_version="0" # for /fapi/v0/posts.json
 
 date = time.strftime("%Y-%m-%d - %H:%M", time.localtime(time.time()))
 
-default_txt = "testmessage\n-------------------------\n\npistos-api-test :: %s \n\n pic:: <img src='http://memedump.com/d/664-8/mudkipz-06.jpg'>\n\n #federationtestautomated #pistoapi " % date
+default_txt = "testmessage\n-------------------------\n\npistos-api-test :: %s \n\n \n\n #federationtestautomated #pistoapi " % date
 
 
 def api_help():
     
     print """
 
-PISTO_API - some tools to post via pisto-api
+APISPORA - some tools to post to diaspora via api
+           supports right now only pisotsapi 
+
 
 USAGE 
     %s [options]
@@ -43,7 +46,10 @@ OPTIONS:
     -d  -> debug ON
 
 CONFIG:
-    users.py    -> user-dict
+    conf/users.py    -> user-dict
+
+DOC:
+    doc/README.apispora
 
     
     """ % (sys.argv[0])
