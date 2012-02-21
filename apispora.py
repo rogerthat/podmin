@@ -8,6 +8,7 @@
 
 import time, socket, string, sys, httplib, urllib, urllib2, getopt, os
 
+sys.path.append("conf")
 
 import users
 
@@ -19,7 +20,7 @@ api_version="0" # for /fapi/v0/posts.json
 
 date = time.strftime("%Y-%m-%d - %H:%M", time.localtime(time.time()))
 
-default_txt = "testmessage\n-------------------------\n\npisto-api-test :: %s \n\n pic:: <img src='http://memedump.com/d/664-8/mudkipz-06.jpg'>\n\n #federationtestautomated #pistoapi " % date
+default_txt = "testmessage\n-------------------------\n\npistos-api-test :: %s \n\n pic:: <img src='http://memedump.com/d/664-8/mudkipz-06.jpg'>\n\n #federationtestautomated #pistoapi " % date
 
 
 def api_help():

@@ -1,0 +1,24 @@
+#
+# config for email2api - interface
+#
+
+mail_server="pop.example.com"
+mail_user="usr@example.com"
+mail_pw="password"
+
+# atm works just with pop, imap will follow
+mail_type = "pop" 
+
+
+ssl="yes"
+
+
+# identifier in subject, subject itself will be ignored
+post_identifier = "#diaspora"
+
+
+# for debugging: set to no
+delete_mails = "yes"
+
+
+mail_footer = "\n\nsend from my iphony\n\n"
