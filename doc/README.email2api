@@ -1,0 +1,48 @@
+
+REAMDE for email2api
+
+email2api.py is a little wrapper that connects to a pop3-account,
+reads the mails and if a certain tag is foudn in the subject,
+posts the message_body to your selected diaspora-account
+
+the subject of the mails should contain the string from
+post_identifier in email2api_conf.py 
+
+    - first setup a disticnt mailccount that is accessible via POP3
+      (imap might follow, but is not yet included)
+
+    - read README.apispora && setup apispora / users.py
+    - copy conf/email2api_conf.py conf/email2api_conf.py
+    - edit email2api_conf.py and fill in the values
+      (please note:  vaiables are given in python_notation, 
+      you must quote strings like this: "string" and every
+      option must be on the start of the line (no spaces/tabs-indention)
+    
+    - send an email to your email2api-account with the same subject 
+      as given in post_identifier from email2api_conf.py 
+    - the message-body might contain markdown/hashtags etc and
+    
+    - execute $ ./email2api.py -u [your_account]
+    
+    - message will be posted 
+    
+--- body first message via email2api.py https://diasp0ra.ca/posts/155205 --------------------
+
+## testmail via email2api
+
+
+some text ... text ... text ...
+
+#hashtags #diasporaca #pistosapi
+
+
+do you liek images?
+
+
+![img](http://30.media.tumblr.com/tumblr_l058s1UCPS1qz9upvo1_500.jpg)
+
+
+btw, sourcecode is available in an early alpha, if someone wants
+
+
+
