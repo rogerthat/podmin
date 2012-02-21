@@ -21,7 +21,7 @@ api_version="0" # for /fapi/v0/posts.json
 
 date = time.strftime("%Y-%m-%d - %H:%M", time.localtime(time.time()))
 
-default_txt = "testmessage\n-------------------------\n\npistos-api-test :: %s \n\n \n\n #federationtestautomated #pistoapi " % date
+default_txt = "testmessage\n-------------------------\n\napispora-test :: %s \n\n \n\n #federationtestautomated #pistosapi " % date
 
 
 def api_help():
