@@ -73,6 +73,8 @@ USAGE:
     
     email2api.py -s -> select user via email_subject
     
+    email2api.py -c -> check, how many emails are in the queue
+    
 OPTIONS:
         -d          -> debug ON
                        default: %s
@@ -83,10 +85,10 @@ OPTIONS:
 
 i_time = int(time.time())
 simulate = "no"
-
+check_only = "no"
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hdnlsu:")
+    opts, args = getopt.getopt(sys.argv[1:], "hdcnlsu:")
 except getopt.GetoptError, err:
     # print help information and exit:
     print " > ERROR on email2api.pyy / parsing non_existant option " 
@@ -111,6 +113,9 @@ for o, a in opts:
     elif o == "-d":
         debug = "yes"
 
+    elif o == "-c":
+        check_only = "yes"
+
 
     elif o == "-n":
         simulate = "yes"
@@ -119,6 +124,25 @@ for o, a in opts:
         print helptext
         sys.exit()
     
+
+parser = Parser()
+
+if ssl != "yes":
+    M = poplib.POP3(mail_server)
+    
+else:
+    M = poplib.POP3_SSL(mail_server)
+
+M.user(mail_user)
+M.pass_(mail_pw)
+
+
+
+if check_only == "yes":
+    debug = "yes"
+    getMsgCount()
+    #numMessages = len(M.list()[1])
+    sys.exit()
 
 if len(user) < 4:
     print """
@@ -132,26 +156,9 @@ if len(user) < 4:
     print helptext
     sys.exit(2)
 
-if ssl != "yes":
-    M = poplib.POP3(mail_server)
-    
-else:
-    M = poplib.POP3_SSL(mail_server)
-
-M.user(mail_user)
-M.pass_(mail_pw)
-
-
-
-print_debug(M.stat()[0])
-print_debug(M.list()[0])
-
-parser = Parser()
 
 
 getMsgCount()
-numMessages = len(M.list()[1])
-
 
 
 ic = 0
