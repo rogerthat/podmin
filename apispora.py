@@ -15,7 +15,7 @@ import users
 
 this_version= " v0.1.4 alpha"
 
-debug = "yes"
+debug = "no"
 
 api_version="0" # for /fapi/v0/posts.json
 
@@ -92,11 +92,11 @@ def api_post(user, text):
     if debug == "yes":
         conn.set_debuglevel(9)
     else:
-        conn.set_debuglevel(9)
+        conn.set_debuglevel(0)
     conn.request("POST", url, params, headers)
     response = conn.getresponse()
     st, re =  response.status, response.reason
-    print st, re
+    pd("%s %s" % ( st, re))
     if st != 200:
         return(st)
     data = response.read()

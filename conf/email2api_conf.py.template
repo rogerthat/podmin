@@ -19,6 +19,10 @@ post_identifier = "#diaspora"
 
 # for debugging: set to no
 delete_mails = "yes"
+delete_invalid_mails = "yes"
 
 
 mail_footer = "\n\nsend from my iphony\n\n"
+
+# how many mails in a row shall be sended
+max_mails = 30

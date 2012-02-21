@@ -20,6 +20,7 @@ bot = ""
 action = "no"
 providers = ["all"]
 
+debug = "no"
 
 helP = """
 
@@ -130,7 +131,8 @@ else:
 
 
 secshun = "select title, link, descu, id, provider from rdf_entries where diabot_seen != '1' and ( provider = %s )  order by id " % (p_select)
-print secshun
+
+#print secshun
 
 c2.execute(secshun)
 res = c2.fetchall()
@@ -148,7 +150,7 @@ for r in res:
         dx = desc.split("src=")[1]
         dx = dx.split(" ")[0].replace("\"", " ").strip()
         desc = """\n\n![XKCD](%s) \n\n""" % dx.replace("'", "")
-        print "DESC: %s " % desc 
+        #print "DESC: %s " % desc 
     msg = """## <a href="%s" target="_blank">%s</a>
 ---------------------------------
 ### Stream  : %s
@@ -162,12 +164,16 @@ for r in res:
 
 #botpost #pistosapibot #%s """ % (link, title, rdf_provider, link, desc,  ts, idx, rdf_provider) 
     #print exe
-    i = sub.call("""%s -d -u %s -t  "%s" """ % (api,bot, msg.replace("\"", "'")), shell=True)
+    dswitch = ""
+    if debug == "yes":
+        dswitch = "-d"
+
+    i = sub.call("""%s %s -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'")), shell=True)
 
     if i == 0:
         set_seen = "update rdf_entries set diabot_seen = '1' where id = '%s' " % idx
         c2.execute(set_seen)
-        print "[+] OK updated [ %s ]\n\n\n" % idx
+        print "[+] OK updated [ %s ]" % idx
     else:
         print "[-] ERROR [ %s :: %s ]  \n\n\n" % (i, idx)
         time.sleep(2)
