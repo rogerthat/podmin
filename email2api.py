@@ -4,10 +4,9 @@
 # email2api - receive mails and post the content
 # via apispora to your diaspora-account
 #
-# v0.1.5
+# v0.1.6 
 #
 
-debug = "yes"
 
 
 import getpass, poplib, sys, time, socket, getopt
@@ -23,41 +22,16 @@ sys.path.append("conf")
 from email2api_conf import *
 
 
-podmin_root_dir = "."
-apispora = "%s/apispora.py" % podmin_root_dir
+debug = "no"
 
-
-i_time = int(time.time())
-
-max_mails = 300
-
-
-helptext = """
-
-EMAIL2API - a small interface to %s
-            to receive and post messages to diaspora
-            from email-accounts
-            
-            for limits see %s -h
-
-
-USAGE:
-    email2api.py -u [usr@pod.org]
-                    receive mails and post to user-account 
-    
-    email2api.py -l -> list available users (shortcut to 
-                    %s -l
-                    
-
-""" % (apispora, apispora, apispora)
 
 def getMsgCount():
     # check message count by stat() and list() functions
     numMsgs = M.stat()[0]
     sizeMsgs = M.stat()[1]
     #print "Num msg by stat():", numMsgs
-    print "Num msg     :", len(M.list()[1])
-    print "Size Inbox  : %s MB" % (sizeMsgs / (1024*1024))
+    print_debug("Num msg     : %s" % len(M.list()[1]))
+    print_debug("Size Inbox  : %s MB" % (sizeMsgs / (1024*1024)))
     #print "Most recent:", numMsgs, getSubj(numMsgs)
     return
 
@@ -76,10 +50,43 @@ def print_debug(in_put):
             print "[d] ---"
             print in_put
 
+
 user = ""
+podmin_root_dir = "."
+apispora = "%s/apispora.py" % podmin_root_dir
+
+
+
+helptext = """
+
+EMAIL2API - a small interface to %s
+            to receive and post messages to diaspora
+            from email-accounts
+            
+
+USAGE:
+    email2api.py -u [usr@pod.org]
+                    receive mails and post to user-account 
+    
+    email2api.py -l -> list available users (shortcut to 
+                    %s -l
+    
+    email2api.py -s -> select user via email_subject
+    
+OPTIONS:
+        -d          -> debug ON
+                       default: %s
+        -n          -> just simulate (no posting/no deletion of mails)
+
+""" % (apispora, apispora, debug)
+
+
+i_time = int(time.time())
+simulate = "no"
+
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hlu:")
+    opts, args = getopt.getopt(sys.argv[1:], "hdnlsu:")
 except getopt.GetoptError, err:
     # print help information and exit:
     print " > ERROR on email2api.pyy / parsing non_existant option " 
@@ -97,12 +104,31 @@ for o, a in opts:
     elif o == "-l":
         sub.call("%s -l" % apispora, shell=TRUE)
         sys.exit()
+    
+    elif o == "-s":
+        user = "subjectselect"    
+
+    elif o == "-d":
+        debug = "yes"
+
+
+    elif o == "-n":
+        simulate = "yes"
+    
     else:
         print helptext
         sys.exit()
     
 
 if len(user) < 4:
+    print """
+
+[-] ERROR ... no user given; use -u usr@pod.org
+              or -s to select via mail_subject
+
+-----------------------------------------------------
+
+    """
     print helptext
     sys.exit(2)
 
@@ -128,17 +154,14 @@ numMessages = len(M.list()[1])
 
 
 
-new_entries = []
 ic = 0
 
-first_date = ""
-last_date = ""
 
 for i in range(numMessages):
 
     processed = i
 
-    if i > max_mails:
+    if i > int(max_mails):
         print "[i] MAX_MAILS reached [ %s ] " % max_mails
         break
 
@@ -156,29 +179,42 @@ for i in range(numMessages):
             frm  = message['From'] 
             subj = message['Subject'] 
             date = message['Date']
-            if len(first_date) < 1:
-                first_date = date
-            last_date = date
             msg  = message.get_payload().replace("\"", "'")
             if subj.find(post_identifier) > -1:
+                print_debug(" OK - valid identifier found in subject [ %s ]" % subj)
                 try:
                     # in case the footer is corrupt
                     msg = "%s \n%s" % (msg, mail_footer)
                 except:
                     pass
+                if user == "subjectselect":
+                    try:
+                        user = subj.split(post_identifier)[1].strip()
+                    except:
+                        print """[-] ERROR while trying to identify user in subjetc [ %s ] """ % subj
+                        continue
                 xe = """%s -u %s -t "%s" """ % (apispora, user, msg)
                 print_debug(xe)
 
-                try:
-                    iggg = 1
-                    #sub.check_call(xe,shell=True)
-                    print "[+] posted to %s" % user
-                except:
-                    print "[-] error while trying to call the api [ %s ] " % xe
-                    continue
 
-                if delete_mails == "yes":
-                    M.dele(i+1)
+                if simulate == "no":
+                    try:
+                        sub.check_call(xe,shell=True)
+                        print "[+] posted to %s" % user
+                    except:
+                        print "[-] error while trying to call the api [ %s ] " % xe
+                        continue
+
+                    if delete_mails == "yes":
+                        M.dele(i+1)
+                else:
+                    print "[s] simulated posting to [ %s ]" % user
+            else:
+                print "[i] ?? no valid identifier found in subject [ %s ] ... deleting " % subj
+                
+                if simulate == "no":
+                    if delete_invalid_mails == "yes":
+                        M.dele(i+1)
             time.sleep(6)
                 
 M.quit()
