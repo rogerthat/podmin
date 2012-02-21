@@ -11,7 +11,7 @@ import time, socket, string, sys, httplib, urllib, urllib2, getopt, os
 
 import users
 
-this_version= " v0.1.1 alpha"
+this_version= " v0.1.2 alpha"
 
 debug = "yes"
 
@@ -19,7 +19,7 @@ api_version="0" # for /fapi/v0/posts.json
 
 date = time.strftime("%Y-%m-%d - %H:%M", time.localtime(time.time()))
 
-default_txt = "testmessage\n-------------------------\n\npisto-api-test :: %s \n\n #federationtestautomated #pistoapi " % date
+default_txt = "testmessage\n-------------------------\n\npisto-api-test :: %s \n\n pic:: <img src='http://memedump.com/d/664-8/mudkipz-06.jpg'>\n\n #federationtestautomated #pistoapi " % date
 
 
 def api_help():
@@ -38,7 +38,8 @@ OPTIONS:
         must be more than 5 chars
             
     -l  -> list users
-    
+
+    -d  -> debug ON
 
 CONFIG:
     users.py    -> user-dict
@@ -81,13 +82,20 @@ def api_post(user, text):
     pd("sending: %s :: %s ::-> %s " % (usr_get, url, params))
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
     conn = httplib.HTTPSConnection(usr_host, 443, timeout=10)
-    conn.set_debuglevel(9)
+    if debug == "yes":
+        conn.set_debuglevel(9)
+    else:
+        conn.set_debuglevel(9)
     conn.request("POST", url, params, headers)
     response = conn.getresponse()
-    print response.status, response.reason
+    st, re =  response.status, response.reason
+    print st, re
+    if st != 200:
+        return(st)
     data = response.read()
     data
     conn.close()
+    return(0)
 
 
 def pd(debug_input):
@@ -121,7 +129,7 @@ if __name__ == "__main__":
     usr_get = ""
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "lhu:t:")
+        opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:")
     except getopt.GetoptError, err:
         # print help information and exit:
         print " > ERROR on api / wrong option "
@@ -138,6 +146,9 @@ if __name__ == "__main__":
         elif o == "-t":
             txt = "%s" % a
 
+        elif o == "-d":
+            debug = "yes"
+
         elif o == "-l":
             list_users()
             sys.exit()
@@ -151,6 +162,9 @@ if __name__ == "__main__":
     if len(txt) < 5:
         txt = default_txt
     
-    api_post(usr_get, txt)
-
+    res = api_post(usr_get, txt)
+    
+    if res == 0:
+        sys.exit(0)
+    sys.exit(res)
 

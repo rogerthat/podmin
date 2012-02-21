@@ -1,0 +1,12 @@
+# might be mysql / sqlite / postgres (not yet)
+
+db_backend="mysql"
+
+# connect to db for data-collection
+db_host = "localhost"
+db_port = 3306
+db_user = "user"
+db_pass = "xxx"
+db_db   = "rdf_master"
+
+
