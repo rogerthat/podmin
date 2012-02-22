@@ -8,8 +8,11 @@
 #
 
 
-import MySQLdb, time, os
+import MySQLdb, time, os, sys
 import subprocess as sub
+
+
+sys.path.append("conf")
 
 from apispora import *
 
