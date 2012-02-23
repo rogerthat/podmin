@@ -4,9 +4,9 @@
 # email2api - receive mails and post the content
 # via apispora to your diaspora-account
 #
-# v0.1.6 
 #
 
+this_version = "v0.1.6"
 
 
 import getpass, poplib, sys, time, socket, getopt
@@ -62,7 +62,7 @@ helptext = """
 EMAIL2API - a small interface to %s
             to receive and post messages to diaspora
             from email-accounts
-            
+            version: %s
 
 USAGE:
     email2api.py -u [usr@pod.org]
@@ -80,7 +80,7 @@ OPTIONS:
                        default: %s
         -n          -> just simulate (no posting/no deletion of mails)
 
-""" % (apispora, apispora, debug)
+""" % (this_version, apispora, apispora, debug)
 
 
 i_time = int(time.time())
@@ -104,7 +104,7 @@ for o, a in opts:
         user = "%s" % a.strip()
     
     elif o == "-l":
-        sub.call("%s -l" % apispora, shell=TRUE)
+        sub.call("%s -l" % apispora, shell=True)
         sys.exit()
     
     elif o == "-s":
@@ -137,11 +137,12 @@ M.user(mail_user)
 M.pass_(mail_pw)
 
 
+numMessages = len(M.list()[1])
+    
 
 if check_only == "yes":
     debug = "yes"
     getMsgCount()
-    #numMessages = len(M.list()[1])
     sys.exit()
 
 if len(user) < 4:
