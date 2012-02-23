@@ -36,7 +36,15 @@ APISPORA - some tools to post to diaspora via api
 
 
 USAGE 
-    %s [options]
+    %s -x [action] [options]
+
+ACTIONS:
+    -x post     -> post a message to a user@pod.org, 
+                   needs -u 
+    -x test     -> test a useraccount
+                   needs -u 
+
+
 
 OPTIONS:
     -u usr@pod.org
@@ -68,11 +76,6 @@ APISPORA
 -----------------------------------------------
     
     """
-
-
-def pd(debug_input):
-    if debug == "yes":
-        print "[d] %s " % debug_input
 
 
 

@@ -7,15 +7,16 @@
 # public available
 #
 
+this_version = "0.1.15"
 
-import MySQLdb, time, os, sys
+import MySQLdb, time, os, sys, getopt
 import subprocess as sub
 
 
 sys.path.append("conf")
+sys.path.append("lib")
 
-from apispora import *
-
+from diaspora_api import *
 from rdf_config import *
 
 api = "./apispora.py"
@@ -27,7 +28,7 @@ debug = "no"
 
 helP = """
 
-post_rdf 
+rdf2api.py -> post news from rdf_collector to diaspora
 
 options:
     -l list available rdf-providers
@@ -37,6 +38,14 @@ options:
 
 
 """ % (api)
+
+
+def pd(debug_input):
+    if debug == "yes":
+        print "[d] %s " % debug_input
+
+
+
 
 
 
@@ -51,7 +60,7 @@ ERROR -> api not found :: %s
 
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "hlp:u:")
+    opts, args = getopt.getopt(sys.argv[1:], "hdlp:u:")
 except getopt.GetoptError, err:
     # print help information and exit:
     print " > ERROR on api / wrong option "
@@ -72,6 +81,9 @@ for o, a in opts:
     elif o == "-l":
         action = "show"
 
+    elif o == "-d":
+        debug = "yes"
+        
     elif o == "-u":
         bot = "%s" % a
 
@@ -81,8 +93,8 @@ for o, a in opts:
         sys.exit()
 
 
+pd("DB::starting db_connection (db-init)")
 try:
-    pd("DB::starting db_connection (db-init)")
     conn2 = MySQLdb.connect(host=db_host, user=db_user, passwd=db_pass,db=db_db )
 except:
     print "[-]ERROR DB::db-connection-error (db-init)"
@@ -105,7 +117,12 @@ Available RDF_providers:
     
     """
     prov = "select distinct(provider) from rdf_entries order by provider"
-    c2.execute(prov)
+    try:
+        c2.execute(prov)
+    except:
+        conn2.close()
+        print "[-]ERROR DB::db while executing ( %s  )) \n \n\n" % prov
+        sys.exit()
     px = c2.fetchall()
     for x in px:
         print "  ->  %s " % x
@@ -173,9 +190,12 @@ for r in res:
 
     i = sub.call("""%s %s -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'")), shell=True)
 
+    
+
     if i == 0:
-        set_seen = "update rdf_entries set diabot_seen = '1' where id = '%s' " % idx
-        c2.execute(set_seen)
+        cx = conn2.cursor()
+        set_seen = "BEGIN; update rdf_entries set diabot_seen = '1' where id = '%s';  COMMIT;" % idx
+        cx.execute(set_seen)
         print "[+] OK updated [ %s ]" % idx
     else:
         print "[-] ERROR [ %s :: %s ]  \n\n\n" % (i, idx)
