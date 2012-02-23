@@ -2,7 +2,7 @@
 # functions for diaspora_api
 #
 
-
+import users
 
 def api_post(user, text):
 
@@ -41,3 +41,22 @@ def api_post(user, text):
     data
     conn.close()
     return(0)
+
+
+def list_users():
+    
+    print """
+
+Listing users
+
+-----------------------------------------------
+    """
+    
+    for user in users.usrs:
+        print "  ->  %s "% user
+
+    print """
+
+-----------------------------------------------
+    
+    """

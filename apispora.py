@@ -13,7 +13,7 @@ sys.path.append("conf")
 sys.path.append("lib")
 
 import users
-import diaspora_api
+from diaspora_api import *
 
 
 this_version= " v0.1.4 alpha"
@@ -74,23 +74,7 @@ def pd(debug_input):
     if debug == "yes":
         print "[d] %s " % debug_input
 
-def list_users():
-    
-    print """
 
-Listing users
-
------------------------------------------------
-    """
-    
-    for user in users.usrs:
-        print "  ->  %s "% user
-
-    print """
-
------------------------------------------------
-    
-    """
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
