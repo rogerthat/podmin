@@ -6,7 +6,7 @@
 #
 #
 
-this_version = "v0.1.6"
+this_version = "v0.1.8"
 
 
 import getpass, poplib, sys, time, socket, getopt
@@ -201,7 +201,7 @@ for i in range(numMessages):
                     except:
                         print """[-] ERROR while trying to identify user in subjetc [ %s ] """ % subj
                         continue
-                xe = """%s -u %s -t "%s" """ % (apispora, user, msg)
+                xe = """%s -x post -u %s -t "%s" """ % (apispora, user, msg)
                 print_debug(xe)
 
 

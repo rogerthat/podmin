@@ -18,7 +18,7 @@ from pywebfinger import finger
 from diaspora_api import *
 
 
-this_version= " v0.1.4 alpha"
+this_version= " v0.1.8 alpha"
 
 global debug
 debug = "no"

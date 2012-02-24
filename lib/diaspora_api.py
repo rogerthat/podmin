@@ -59,16 +59,16 @@ def api_test(user):
         uhcard = uinfo[1]
     
     try:
-        i = urllib.urlopen(uprofile).readlines()
+        i = urllib2.urlopen(uprofile,timeout=15).readlines()
         if len(i) > 0:
             upres = "OK "
         else:
             upres = ":: "
     except:
         upres = "ERR"
-    
+    time.sleep(1)
     try:
-        i = urllib.urlopen(uhcard).readlines()
+        i = urllib2.urlopen(uhcard, timeout=15).readlines()
         if len(i) > 0:
             ucres = "OK "
         else:

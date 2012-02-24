@@ -7,7 +7,7 @@
 # public available
 #
 
-this_version = "0.1.15"
+this_version = "0.1.20"
 
 import MySQLdb, time, os, sys, getopt
 import subprocess as sub
@@ -188,7 +188,7 @@ for r in res:
     if debug == "yes":
         dswitch = "-d"
 
-    i = sub.call("""%s %s -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'")), shell=True)
+    i = sub.call("""%s %s  -x post -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'")), shell=True)
 
     
 

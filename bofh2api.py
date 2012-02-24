@@ -109,7 +109,7 @@ msg = """
 
 """ % excuse
 
-xe = """%s -u %s -t "%s" """ % (apispora, user, msg)
+xe = """%s -x post -u %s -t "%s" """ % (apispora, user, msg)
 #print xe
 
 
