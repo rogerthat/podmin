@@ -15,6 +15,7 @@ sys.path.append("lib")
 
 import users
 from pywebfinger import finger
+from diaspora_api import *
 
 
 this_version= " v0.1.4 alpha"
@@ -42,14 +43,14 @@ USAGE
     %s -x [action] [options]
 
 ACTIONS:
-    -x post     -> post a message to a user@pod.org, 
-                   needs -u 
-                   
+
     -x test     -> test a useraccount
                    needs -u 
                    default option; used if not given
 
-
+    -x post     -> post a message to a user@pod.org, 
+                   needs -u 
+                   
 
 OPTIONS:
     -u usr@pod.org
@@ -86,6 +87,7 @@ APISPORA
 txt = ""
 usr_get = ""
 action = "test"
+uexec = ""
 try:
     opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:")
 except getopt.GetoptError, err:
@@ -112,9 +114,7 @@ for o, a in opts:
         debug = "yes"
 
     elif o == "-l":
-        import diaspora_api
-        diaspora_api.list_users()
-        sys.exit()
+        uexec = "list" 
     else:
         api_help()
         sys.exit()
@@ -130,6 +130,10 @@ if __name__ == "__main__":
 
 
     from diaspora_api import *
+    
+    if uexec == "list":
+        list_users()
+        sys.exit()
     
     if usr_get == "":
         print """

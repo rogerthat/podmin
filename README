@@ -5,7 +5,15 @@ these tools are in very early alpha-state and might break
 with every commit, so please test carefully with testaccounts 
 first and after every update
 
-see docs/REAME.$tool for more info
+see docs/REAME.$tool for more info on usage of each single 
+tool
+
+INSTALL
+
+    - python 2.6 or greater
+    - as root: umask 022 && easy_install iso8601
+    - maybe you'll neede some (python) xml-modules, 
+      stacktraces will tell you, which ;-)
 
 
 Update-Info when you want to pull from git:
@@ -17,6 +25,7 @@ Update-Info when you want to pull from git:
       new or changed options
     - test what you need
     - start engines again
+
 
 
 

@@ -5,7 +5,7 @@
 #
 #
 
-import users
+
 from apispora import *
 import xml.etree.ElementTree as ElementTree
 import xml.parsers.expat
@@ -90,14 +90,6 @@ def get_user_info(user):
         return(wf.profile, wf.hcard)
     except:
         return(0)
-
-
-def _lese_text(element): 
-    typ = element.get("typ", "str") 
-    return eval("%s('%s')" % (typ, element.text))
-
-
-
 
     
 def api_post(user, text):
