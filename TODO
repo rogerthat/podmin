@@ -3,5 +3,7 @@ TODO
 api
     -t [type]
     -v [version]
-    -x [post/view]
+    
+    -a 1,2,3 -> can be a list of comma-separated values
+
     

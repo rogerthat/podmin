@@ -194,7 +194,7 @@ def api_post(user, text):
 
     if aspect_id != 0:
         a_id = aspect_id # " ".join(aspect_id.split(","))
-        api_request = {'token': usr_key, 'text': text, "aspect_ids" : a_id}
+        api_request = {'token': usr_key, 'text': text, "aspect_ids[]" : a_id}
         #~ update( otherDictionary )
         #~ Adds all the key-value pairs from otherDictionary to the current dictionary.
     else:

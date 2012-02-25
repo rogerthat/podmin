@@ -73,10 +73,8 @@ OPTIONS:
     -a aspect_id -> if you want to post via pistos_api, 
                     you might give an aspect that this post
                     will be linked to
-                    can be a list of comma-separated values
                     (as of 2012-02-24 this is only available 
                     @ diasp0ra.ca)
-                    
     
     -t "message to send \\n with \\n linebreaks\\n\\n and #hashtags "
         must be more than 5 chars
