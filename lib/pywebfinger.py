@@ -42,6 +42,7 @@ class WebFingerClient(object):
         return [e.value for e in xrd.elements if e.name == 'hm:Host']
     
     def xrd(self, url, raw=False):
+        print "XXX: URL %s" % url
         conn = self._opener.open(url)
         response = conn.read()
         conn.close()
@@ -58,12 +59,15 @@ class WebFingerClient(object):
         hm_hosts = self._hm_hosts(hm)
         
         if self._host not in hm_hosts:
-            raise WebFingerExpection("hostmeta host did not match account host")
+            # i'd like to continue parsing, due to a bug in JD
+            # https://github.com/Pistos/diaspora/issues/76
+            print "[!] hostmeta host did not match account host"
+            #raise WebFingerExpection("hostmeta host did not match account host")
                 
         template = hm.find_link(WEBFINGER_TYPES, attr='template')
         xrd_url = template.replace('{uri}',
                     urllib.quote_plus('acct:%s@%s' % (username, self._host)))
-                    
+        
         return WebFingerResponse(self.xrd(xrd_url))
 
 def finger(identifier, secure=True):

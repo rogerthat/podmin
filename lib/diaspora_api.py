@@ -85,6 +85,7 @@ def api_test(user):
     
     return(0)
 def get_user_info(user):
+
     try:
         wf = finger(user)
         return(wf.profile, wf.hcard)

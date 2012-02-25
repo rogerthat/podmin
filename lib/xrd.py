@@ -221,6 +221,7 @@ def _parse_xml(content):
             handler(node, obj)
     
     # hack by roger -> diaspora display wrong hcard
+    #print "XXX :: \n%s" % content
     doc = parseString(content.replace("&quot;", "\""))
     root = doc.documentElement
     

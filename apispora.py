@@ -5,7 +5,15 @@
 # api, right now only working with pistosapi
 # 
 
+this_version= " v0.1.8 alpha"
+
+
 #
+#
+#
+#
+
+
 
 import time, socket, string, sys, httplib, urllib, urllib2, getopt, os
 
@@ -18,7 +26,7 @@ from pywebfinger import finger
 from diaspora_api import *
 
 
-this_version= " v0.1.8 alpha"
+
 
 global debug
 debug = "no"
@@ -54,6 +62,10 @@ ACTIONS:
 
 OPTIONS:
     -u usr@pod.org
+    
+    -a aspect_id -> if you want to post via pistos_api, 
+                    you might give an aspect that this post
+                    will be linked to
     
     -t "message to send \\n with \\n linebreaks\\n\\n and #hashtags "
         must be more than 5 chars
