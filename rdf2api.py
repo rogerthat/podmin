@@ -7,7 +7,7 @@
 # public available
 #
 
-this_version = "0.1.20"
+this_version = "0.1.22"
 
 import MySQLdb, time, os, sys, getopt
 import subprocess as sub
@@ -121,7 +121,7 @@ Available RDF_providers:
         c2.execute(prov)
     except:
         conn2.close()
-        print "[-]ERROR DB::db while executing ( %s  )) \n \n\n" % prov
+        print "[-] ERROR DB::db while executing ( %s  )) \n \n\n" % prov
         sys.exit()
     px = c2.fetchall()
     for x in px:
@@ -171,10 +171,10 @@ for r in res:
         dx = dx.split(" ")[0].replace("\"", " ").strip()
         desc = """\n\n![XKCD](%s) \n\n""" % dx.replace("'", "")
         #print "DESC: %s " % desc 
-    msg = """## <a href="%s" target="_blank">%s</a>
+    msg = """### ![%s](%s) 
 ---------------------------------
-### Stream  : %s
-### Link    : %s
+#### Stream  : %s
+#### Link    : %s
 ---------------------------------
 
 %s 
@@ -182,7 +182,7 @@ for r in res:
 ---------------------------------
 %s :: %s 
 
-#botpost #pistosapibot #%s """ % (link, title, rdf_provider, link, desc,  ts, idx, rdf_provider) 
+#botpost #pistosapibot #%s """ % (title, link, rdf_provider, link, desc,  ts, idx, rdf_provider) 
     #print exe
     dswitch = ""
     if debug == "yes":
