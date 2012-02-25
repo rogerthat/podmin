@@ -1,14 +1,24 @@
 REAMDE for apispora
 
 
-apispora is a wrapper to post to your diaspora-ccount, actually only
-pistosapi is supported
+apispora is a wrapper for some diaspora-account-actions
+like posting to or checking an account
+(See ACTIONS for more details)
 
 every command must be executed from the podmin_directory, 
 if you want to execute via cronjob your can do it like this
 (e.g. post some stupid comments every 15 minutes:
 
 */15 * * * * cd /path/to/podmin && ./apispora.py -u you@pod.org -t "this is my stupid comment\n\neven with linebreaks\n\n#hashtag"
+
+
+TOC
+    SETUP
+    USAGE
+    EXAMPLES
+    CONFIG
+    Usage from external tools
+    
 
 SETUP:
     - get your API-KEY (available only on pods running the latest 
@@ -17,14 +27,22 @@ SETUP:
     - edit users.py and set your api_key; 
       please note: this is python_dictionary_notation, please follow 
       the examples and be sure to have your username/apikey quoted by 
-      backtick 'value', separated by a : , ended by a comma, if you want
-      to inlcude multiple accounts 
+      backtick 'value', separated by a : , ended by a comma, 
+      to include multiple accounts 
+      http://docs.python.org/tutorial/datastructures.html#dictionaries
 
 USAGE
     $ ./apispora.py -h 
 
+
+EXAMPLES:
     $ ./apispora.py -u you@pod.org
             - send defaultmessage to your account
+
+    $ ./apispora.py -u  you@pod.org
+            - send defaultmessage to your account to your aspect_ids
+              23,24 
+
     
     $ ./apispora.py -u you@pod.org -t "some text \n with linebreaks \n and #hashtags \n\n"
             - send the text given via -t (if more than one word it must be escaped via 
@@ -34,28 +52,15 @@ USAGE
             - list available accounts from users.py 
 
     
-    
-    OPTIONS:
-        -u usr@pod.org
-        
-        -t "message to send \n with \n linebreaks\n\n and #hashtags "
-            must be more than 5 chars
-                
-        -l  -> list users
-    
-        -d  -> debug ON
-    
-    CONFIG:
-        conf/users.py    -> user-dict
-    
-    DOC:
-        doc/README.apispora
+CONFIG:
+    conf/users.py    -> user-dict
+
     
 
 Usage from external tools:
     - be sure to jump to /path/to/podmin first
     - when calling $ ./apispora.py -u usr@pod.org -t "output of your program"
       replace " in your output to prevent failure, in python its
-      msg = msg.replace("\"", "'")
+      message = output.replace("\"", "'")
       
       

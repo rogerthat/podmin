@@ -55,6 +55,13 @@ ACTIONS:
     -x test     -> test a useraccount
                    needs -u 
                    default option; used if not given
+                   
+    -x patest   -> pistos-api-test
+                   needs -u 
+                   displays user-info/profile-link, recent notifications
+                   and aspects-info
+                   (as of 2012-02-24 this is only available 
+                   @ diasp0ra.ca)
 
     -x post     -> post a message to a user@pod.org, 
                    needs -u 
@@ -66,6 +73,10 @@ OPTIONS:
     -a aspect_id -> if you want to post via pistos_api, 
                     you might give an aspect that this post
                     will be linked to
+                    can be a list of comma-separated values
+                    (as of 2012-02-24 this is only available 
+                    @ diasp0ra.ca)
+                    
     
     -t "message to send \\n with \\n linebreaks\\n\\n and #hashtags "
         must be more than 5 chars
@@ -100,8 +111,9 @@ txt = ""
 usr_get = ""
 action = "test"
 uexec = ""
+aspect_id = 0
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:")
+    opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:a:")
 except getopt.GetoptError, err:
     # print help information and exit:
     print " > ERROR on api / wrong option "
@@ -117,6 +129,9 @@ for o, a in opts:
     
     elif o == "-t":
         txt = "%s" % a
+
+    elif o == "-a":
+        aspect_id = "%s" % a
 
     elif o == "-x":
         action = "%s" % a.strip()
@@ -161,6 +176,10 @@ if __name__ == "__main__":
 
         res = api_test(usr_get)
 
+    elif action == "patest":
+
+        res = papi_test(usr_get)
+
     elif action == "post":
         if len(txt) < 5:
             txt = default_txt
@@ -173,10 +192,10 @@ if __name__ == "__main__":
 
 [-] ERROR - action [ %s ] not found / implemented
     try:    %s -h 
-            $s -l
+            %s -l
 
 
-    """ % (sys.argv[0], sys.argv[0])
+    """ % (action, sys.argv[0], sys.argv[0])
         res = 23
     
     if res == 0:
