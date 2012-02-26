@@ -39,9 +39,9 @@ EXAMPLES:
     $ ./apispora.py -u you@pod.org
             - send defaultmessage to your account
 
-    $ ./apispora.py -u  you@pod.org
+    $ ./apispora.py -u -a 23,42 you@pod.org
             - send defaultmessage to your account to your aspect_ids
-              23,24 
+              23,42
 
     
     $ ./apispora.py -u you@pod.org -t "some text \n with linebreaks \n and #hashtags \n\n"

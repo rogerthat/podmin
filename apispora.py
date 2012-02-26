@@ -31,8 +31,7 @@ from diaspora_api import *
 global debug
 debug = "no"
 
-
-api_version="0" # for /fapi/v0/posts.json
+pistos_api_version="0" # for /fapi/v0/posts.json
 
 date = time.strftime("%Y-%m-%d - %H:%M", time.localtime(time.time()))
 
@@ -175,7 +174,8 @@ if __name__ == "__main__":
         res = api_test(usr_get)
 
     elif action == "patest":
-
+        
+        api_test(usr_get)
         res = papi_test(usr_get)
 
     elif action == "post":

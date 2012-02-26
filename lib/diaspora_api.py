@@ -101,20 +101,47 @@ def papi_test(user):
 
     usr_name = user.split("@")[0].strip()
     usr_host = user.split("@")[1].strip()
-    url="/fapi/v%s/aspects.json" % (api_version)
-
     api_request = {'token': usr_key}
     params = urllib.urlencode(api_request)
     
-    pd("sending: %s :: %s ::-> %s " % (user, url, params))
     headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain", "User-Agent": "Apispora %s" % this_version}
     conn = httplib.HTTPSConnection(usr_host, 443, timeout=10)
     if debug == "yes":
         conn.set_debuglevel(9)
     else:
         conn.set_debuglevel(0)
+
+    url="/fapi/v%s/notifications.json" % (pistos_api_version)
+    pd("sending: %s :: %s ::-> %s " % (user, url, params))
     conn.request("GET", url, params, headers)
-    response = conn.getresponse()
+    try:
+        response = conn.getresponse()
+    except:
+        print "[-] Error in Response to %s " % url
+        return(4040)
+    st, re =  response.status, response.reason
+    pd("%s %s" % ( st, re))
+    if st != 200:
+        return(st)
+    data = response.read()
+    print """
+---------------------------------------------------
+NOTIFICATIONS:
+
+%s
+
+
+    """ % data
+
+    time.sleep(6)
+    url="/fapi/v%s/aspects.json" % (pistos_api_version)
+    pd("sending: %s :: %s ::-> %s " % (user, url, params))
+    conn.request("GET", url, params, headers)
+    try:
+        response = conn.getresponse()
+    except:
+        print "[-] Error in Response to %s " % url
+        return(4040)
     st, re =  response.status, response.reason
     pd("%s %s" % ( st, re))
     if st != 200:
@@ -138,21 +165,7 @@ ASPECTS:
             print " %-6s  -> %s " % (idtag, ntag)
             
 
-    url="/fapi/v%s/notifications.json" % (api_version)
-    time.sleep(6)
-    conn.request("GET", url, params, headers)
-    response = conn.getresponse()
-    st, re =  response.status, response.reason
-    pd("%s %s" % ( st, re))
-    if st != 200:
-        return(st)
-    data = response.read()
-    print """
----------------------------------------------------
-NOTIFICATIONS:
 
-%s
-    """ % data
 
 
     conn.close()
@@ -190,7 +203,7 @@ def api_post(user, text):
 
     usr_name = user.split("@")[0].strip()
     usr_host = user.split("@")[1].strip()
-    url="/fapi/v%s/posts.json" % (api_version)
+    url="/fapi/v%s/posts.json" % (pistos_api_version)
 
     if aspect_id != 0:
         a_id = aspect_id # " ".join(aspect_id.split(","))
