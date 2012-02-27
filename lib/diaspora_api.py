@@ -6,13 +6,18 @@
 #
 
 
-from apispora import *
+from apispora import debug, users, this_version, pistos_api_version, pd
 import xml.etree.ElementTree as ElementTree
 import xml.parsers.expat
 from xml.dom.minidom import parseString
 import tempfile as tmp
+from pywebfinger import finger
+
+import httplib, urllib, urllib2, time
 
 
+
+api_exec = "./apispora.py"
 
 
 tmpdir="/tmp"
@@ -60,6 +65,7 @@ def api_test(user):
     
     try:
         i = urllib2.urlopen(uprofile,timeout=15).readlines()
+        #pd(i)
         if len(i) > 0:
             upres = "OK "
         else:
@@ -69,6 +75,7 @@ def api_test(user):
     time.sleep(1)
     try:
         i = urllib2.urlopen(uhcard, timeout=15).readlines()
+        #pd(i)
         if len(i) > 0:
             ucres = "OK "
         else:
@@ -175,6 +182,8 @@ ASPECTS:
     
 
 def get_user_info(user):
+    wf = finger(user)
+    return(wf.profile, wf.hcard)
 
     try:
         wf = finger(user)
@@ -183,7 +192,7 @@ def get_user_info(user):
         return(0)
 
     
-def api_post(user, text):
+def api_post(user, text, aspect_id):
 
 
     try:
@@ -198,8 +207,8 @@ def api_post(user, text):
         list_users()
         sys.exit(2)
 
+    pd("api_post :: %s " % (user))
         
-    pd("api_post :: %s :: %s :: %s " % (user, aspect_id, usr_key))
 
     usr_name = user.split("@")[0].strip()
     usr_host = user.split("@")[1].strip()
