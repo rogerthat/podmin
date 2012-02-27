@@ -3,5 +3,6 @@
 #
 
 conf/*.py
+conf/*.list
 *.pyc
 workshell.env

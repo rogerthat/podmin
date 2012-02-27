@@ -23,7 +23,7 @@ sys.path.append("lib")
 
 import users
 from pywebfinger import finger
-from diaspora_api import *
+
 
 
 
@@ -109,6 +109,7 @@ usr_get = ""
 action = "test"
 uexec = ""
 aspect_id = 0
+
 try:
     opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:a:")
 except getopt.GetoptError, err:
@@ -182,7 +183,7 @@ if __name__ == "__main__":
         if len(txt) < 5:
             txt = default_txt
     
-        res = api_post(usr_get, txt)
+        res = api_post(usr_get, txt, aspect_id)
         if res == 0:
             print "[+] OK posting [ %s ]" % usr_get
     else:
