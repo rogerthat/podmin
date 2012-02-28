@@ -16,7 +16,9 @@ INSTALL
       stacktraces will tell you, which ;-)
     - install selenium from stuff/selenium-2.19.1 
       umask 022 && python setup.py install
-
+    - if you want to use ftw (federation test warrior)
+      install xvfb ( xorg-x11-Xvfb on redhat)
+      
 
 Update-Info when you want to pull from git:
 

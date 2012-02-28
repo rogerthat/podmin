@@ -1,0 +1,27 @@
+REAMDE for ftw / federation test warrior
+
+see: https://c0unt.org/doc/wiki/Misc/FedTestProposal
+
+selenium: http://seleniumhq.org/
+
+running selenium-server headless:
+    - /usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 &
+    - export DISPLAY=:99 && /usr/bin/java -jar lib/selenium-server.jar &
+
+    
+#!/bin/bash
+
+if [ -z "$1" ]; then
+echo "`basename $0` {start|stop}"
+exit
+fi
+
+case "$1" in
+start)
+/usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 &
+;;
+
+stop)
+killall Xvfb
+;;
+esac
