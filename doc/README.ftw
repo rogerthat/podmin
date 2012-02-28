@@ -2,6 +2,35 @@ REAMDE for ftw / federation test warrior
 
 see: https://c0unt.org/doc/wiki/Misc/FedTestProposal
 
+
+
+
+SETUP:
+    
+    - setup a database and user (mysql)
+    - replay doc/create_ftw_db.sql into that database
+    - cp conf/ftw_config.py.template conf/ftw_config.py 
+    - edit conf/ftw_config.py and adjust db-settings
+    - cp conf/ftw_users.list.template conf/ftw_users.list
+    - create testaccounts on different pods
+    - edit conf/ftw_users.list and setup your testaccounts
+    - test ftw-connections: ./ftw.py -x test#
+    - consult config -> schedule_time_steps to see in what delay
+      checks may be performend, adjust to your needs
+    - consult config -> warning_time + critcal_time, adjust, if needed
+    - run manually ./ftw.py -x start-test -d
+    - run manually ./ftw.py -x scheduler -d
+    - check after some time-delay if ./ftw.py -x scheduler -d is generating
+      results
+      
+    - create a cronjob to generate tests ( every 4 hours)
+       42 */4 * * cd /path/to/podmin && ./ftw.py -x start-test
+    
+    - create a cronjob to run the scheduler (5 min, max 10 minutes delay)
+       */5 * * * cd /path/to/podmin && ./ftw.py -x scheduler
+    
+
+
 selenium: http://seleniumhq.org/
 
 running selenium-server headless:

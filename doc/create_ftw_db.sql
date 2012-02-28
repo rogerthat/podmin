@@ -1,4 +1,4 @@
-create database ftw DEFAULT CHARACTER SET utf8;
+-- create database ftw DEFAULT CHARACTER SET utf8;
 
 
 drop table if exists tests;
@@ -33,12 +33,14 @@ create table test_results (
     testid varchar(56) collate utf8_unicode_ci,
     account varchar(128),
     status int,
+    checked int DEFAULT 0,
     
     PRIMARY KEY (id, testid),
     UNIQUE KEY id (id)
 
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+drop table if exists test_logs;
 create table test_logs (
     id int(11) NOT NULL AUTO_INCREMENT,
     testid varchar(56) collate utf8_unicode_ci,

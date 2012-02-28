@@ -119,11 +119,16 @@ if __name__ == "__main__":
         sys.exit()
     
     
-    
+    rc = check_selenium_rc()
+    if rc != 0:
+        print "\n\n[-] ERROR [ %s ] ... selenium_rc not started \n\n" % rc
+        sys.exit(2)
+    else:
+        pd("OK Selenium_RemoteComntrol is up")
     
     
     ud = get_ftw_user_dict()
-
+    pd("%s users loaded form user-dict %s " % (len(ud), ftw_user_list))
     
     if action == "start-test":
         

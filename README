@@ -18,6 +18,7 @@ INSTALL
       umask 022 && python setup.py install
     - if you want to use ftw (federation test warrior)
       install xvfb ( xorg-x11-Xvfb on redhat)
+      install sun-java (6.0.18 or greater)
       
 
 Update-Info when you want to pull from git:
