@@ -8,7 +8,7 @@
 #
 #
 
-this_version = "0.0.2"
+this_version = "0.1.0"
 
 import MySQLdb, time, os, sys, getopt
 import subprocess as sub
