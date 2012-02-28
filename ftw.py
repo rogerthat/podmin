@@ -44,11 +44,11 @@ USAGE
 ACTIONS
     -x start-test   -> starts a test-init 
     -x scheduler    -> calls scheduler to execute tests 
+    -x test-logins  -> checks login for every account from 
+                       ftw_user_list
 **  -x list         -> list running/unfinished tests
 **  -x cleanup      -> closes unfinished tests > close_final_time
 **  -x report       -> interactive status-report
-**  -x test-logins  -> checks login for every account from 
-                       ftw_user_list
    
 **) not yet, kameraden, not yet!
     
@@ -74,6 +74,9 @@ try:
 except:
     print "[-]ERROR DB::db-connection-error (db-init)"
     sys.exit(2)
+
+
+# some global-vars
 
 
 
@@ -137,8 +140,19 @@ if __name__ == "__main__":
             print "\n\n[-] ERROR ... invalid testid \n\n"
             sys.exit(2)
         # debug only
-        ud = {}
+    
+    elif action == "scheduler":
+        exec_scheduler(ud)
         
+
+    elif action == "test-logins":
+        print "\n----------------------- \n> testing logins \n"
+
+
+        
+
+
+
         for u in ud:
             host = u.split("@")[1]
             user = u.split("@")[0]
@@ -146,20 +160,28 @@ if __name__ == "__main__":
             find_text = ""
             print "[i] checking login for %s " % u
             threads = []
-            t = threading.Thread(target=start_check, args=(user, host, pw, find_text))
+            t = threading.Thread(target=test_login, args=(user, host, pw, find_text))
             threads.append(t)
             t.start()
+            time.sleep(int(ramp_up_delay))
+        if debug == "yes":
             time.sleep(1)
+        else:
+            time.sleep(15)
         while len(threading.enumerate()) > 1:
             print "[i] %2s checks running, waiting for threads to finish" % (len(threading.enumerate())-1)
-            time.sleep(19)
-
-    
-    elif action == "scheduler":
-        exec_scheduler(ud)
+            time.sleep(3)
         
-    
-    
+        print "\n--[ Login-Test-Results ]----------------------------------------------\n"
+
+        if len(ok_user) == len(ud):
+            print "[+] All logins OK [ %s / %s ] " % (len(ok_user), len(ud))
+        else:
+            print "[-] Failed logins [ %s / %s ] " % (len(failed_user), len(ud))
+            for fu in failed_user:
+                print "   - %s " % fu
+            
+        
     else:
         print """
     
