@@ -7,3 +7,6 @@ api
     -a 1,2,3 -> can be a list of comma-separated values
 
     
+ftw
+    - get results from unittest.TestResults()
+    

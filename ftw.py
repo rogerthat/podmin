@@ -127,7 +127,7 @@ if __name__ == "__main__":
         print "\n\n[-] ERROR [ %s ] ... selenium_rc not started \n\n" % rc
         sys.exit(2)
     else:
-        pd("OK Selenium_RemoteComntrol is up")
+        pd("OK Selenium_RemoteControl is up")
     
     
     ud = get_ftw_user_dict()
@@ -146,12 +146,9 @@ if __name__ == "__main__":
         
 
     elif action == "test-logins":
+        from ftw_test_login import *
+
         print "\n----------------------- \n> testing logins \n"
-
-
-        
-
-
 
         for u in ud:
             host = u.split("@")[1]
