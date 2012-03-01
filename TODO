@@ -9,4 +9,6 @@ api
     
 ftw
     - get results from unittest.TestResults()
+    - -x result -o output_dir html/txt
+      24hrs/48hrs/7days/31days  
     

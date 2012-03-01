@@ -51,3 +51,19 @@ create table test_logs (
     UNIQUE KEY id (id)
 
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+drop table if exists test_logins;
+create table test_logins (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    testid varchar(56) collate utf8_unicode_ci,
+    login_ok INT DEFAULT 0,
+    ok_bots varchar(2048),
+    failed_bots varchar(2048),
+    login_failed INT DEFAULT 0,
+    remarks varchar(1024),
+    
+    PRIMARY KEY (id, testid),
+    UNIQUE KEY id (id, testid)
+
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

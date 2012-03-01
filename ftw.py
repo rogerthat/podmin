@@ -146,6 +146,7 @@ if __name__ == "__main__":
         
 
     elif action == "test-logins":
+        testid = int(time.time())
         from ftw_test_login import *
 
         print "\n----------------------- \n> testing logins \n"
@@ -177,8 +178,87 @@ if __name__ == "__main__":
             print "[-] Failed logins [ %s / %s ] " % (len(failed_user), len(ud))
             for fu in failed_user:
                 print "   - %s " % fu
-            
         
+        rmks = """OK : %s ::
+FAILED: %s
+        
+        """ % (" ".join(ok_user), " ".join(failed_user))
+        dbx = """SET autocommit=1;
+    INSERT INTO test_logins (testid, login_ok, ok_bots, login_failed, failed_bots, remarks)
+    values ('%s', '%s', '%s', '%s', '%s', '%s');    
+    """ % (testid, len(ok_user), ", ".join(ok_user), len(failed_user), ", ".join(failed_user), rmks)
+        pd(dbx)
+        c.execute(dbx)
+        print "[+] db updated with login-test-result"
+    
+    elif action == "result":
+        now_time = int(time.time())
+        now_date = time.strftime("%Y-%m-%d %H:%M UTC+1", time.localtime(time.time()))
+        test_24h = now_time - (24*60*60)
+        print """
+> generating results        
+        """
+        dbx = "select login_ok, ok_bots, login_failed, failed_bots, testid from test_logins where testid > '%s' " % test_24h
+        c.execute(dbx)
+        tres = c.fetchall()
+        ok_count = 0
+        failed_count = 0
+        total_count = 0
+        for res in tres:
+            ok = res[0]
+            failed = res[2]
+            ok_count += int(ok)
+            failed_count += int(failed)
+        total_count = ok_count + failed_count
+        if failed_count == 0:
+            result = "perfekt"
+        elif float(failed_count / total_count) > login_test_critical_ratio:
+            result = "critical"
+        elif float(failed_count / total_count) > login_test_warning_ratio:
+            result = "warning"
+        else:
+            result = "ok"
+        
+        out_txt = """
+--[ FederationTestWarrior #FTW ]----------------------------------
+
+Login-Test-Result %s
+
+------------------------------------------------------------------
+
+Overall Status      : %s
+Total OK            : %s
+Total FAILED        : %s
+
+Testruns    (24hrs) : %s
+Total Tests (24hrs) : %s
+
+------------------------------------------------------------------
+
+Long result (24hrs)
++------------------------+------+------+------------------------------
+| date                   |  OK  | FAIL | RMKS  
++------------------------+------+------+------------------------------""" % (now_date, result.upper(), ok_count, failed_count, len(tres), total_count) 
+        for res in tres:
+            ok = res[0]
+            ok_bots = res[1]
+            failed = res[2]
+            failed_bots = ""
+            if int(failed) > 0:
+                failed_bots = "FAILED: %s" % res[3].split("@")[1]
+            tstamp = time.strftime("%Y-%m-%d %H:%M UTC+1", time.localtime(float(res[4])))
+            
+            out_txt =  """%s
+| %s | %3s  | %3s  |  %s""" % (out_txt, tstamp, ok, failed, failed_bots)
+
+        out_txt = """%s
++------------------------+------+------+------------------------------
+            SUMMARY      | %3s  | %3s  |
+                         +------+------+
+            """ % (out_txt, ok_count, failed_count)
+        
+        print out_txt
+    
     else:
         print """
     
