@@ -10,15 +10,19 @@ tool
 
 INSTALL
 
-    - python 2.6 or greater
+    - python 2.6 or greater on any recent linux
+    - you'll need the following python-modules
+        - python-mysqldb
+        - python-xml
+
     - as root: umask 022 && easy_install iso8601
     - maybe you'll neede some (python) xml-modules, 
       stacktraces will tell you, which ;-)
-    - install selenium from stuff/selenium-2.19.1 
-      umask 022 && python setup.py install
+      
     - if you want to use ftw (federation test warrior)
       install xvfb ( xorg-x11-Xvfb on redhat)
       install sun-java (6.0.18 or greater)
+      install icewasel/firefox from repos
       
 
 Update-Info when you want to pull from git:

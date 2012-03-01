@@ -1,7 +1,7 @@
 #
 # functions for ftw
 #
-# v0.0.20
+# v0.0.22
 #
 #
 
@@ -10,7 +10,7 @@ from ftw import debug, pd, c, conn
 
 from ftw_config import *
 
-import time, random, hashlib, sys, unittest, threading, socket
+import time, random, hashlib, sys, unittest, threading, socket, MySQLdb
 from selenium import selenium
 
 
@@ -65,8 +65,27 @@ def start_check(u, h, p, c, testid, start_time, init_time):
             c.execute(dbx)
             
 
-        
+def db_exec(dbx):
+    # due to http://stackoverflow.com/questions/567622/is-there-a-pythonic-way-to-try-something-up-to-a-maximum-number-of-times
+    # issue raised during livetests 
+    # 
 
+    attempts = 0
+    
+    while attempts < 5:
+        try:
+            cx = conn.cursor()
+            cx.execute(dbx)
+            return(0)
+        except MySQLdb.Error, e:
+            error = "MySQL Error %d: %s" % (e.args[0], e.args[1])
+            attempts += 1
+            print "try: %s" % attempts
+            print error
+    
+    return(error)
+
+        
 def exec_scheduler(ud):
     
     

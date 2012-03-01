@@ -31,7 +31,14 @@ SETUP:
     
     - create a cronjob to run the scheduler (5 min, max 10 minutes delay)
        */5 * * * cd /path/to/podmin && ./ftw.py -x scheduler
+
+    - create a cronjob to run the login-tests every hour
+      23 * * * * cd /path/to/podmin && ./ftw.py -x test-logins
     
+    - create a cronjob to run the report-generator every hour
+      32 * * * * cd /path/to/podmin && ./ftw.py -x report > /path/to/docroot/ftw/report.txt
+      
+
 
 
 selenium: http://seleniumhq.org/
@@ -43,3 +50,8 @@ running selenium-server headless:
     
 see stuff/selenium-rc-startscript.sh
 
+
+
+Troubleshooting
+    - [-] ERROR on db_update for login-test-result [ MySQL Error 2006: MySQL server has gone away ]
+        -> increase wait_timeout in mysql > 60 (bad solution)

@@ -193,9 +193,12 @@ FAILED: %s
     values ('%s', '%s', '%s', '%s', '%s', '%s');    
     """ % (testid, len(ok_user), ", ".join(ok_user), len(failed_user), ", ".join(failed_user), rmks)
         pd(dbx)
-        c.execute(dbx)
-        print "[+] db updated with login-test-result"
-    
+        dbres = db_exec(dbx)
+        if dbres == 0:
+            print "[+] db updated with login-test-result"
+        else:
+            print "[-] ERROR on db_update for login-test-result \n    [ %s ]" % dbres
+        
     elif action == "report":
         now_time = int(time.time())
         now_date = time.strftime("%Y-%m-%d %H:%M UTC+1", time.localtime(time.time()))
