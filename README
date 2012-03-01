@@ -14,6 +14,7 @@ INSTALL
     - you'll need the following python-modules
         - python-mysqldb
         - python-xml
+        - python-mechanize
 
     - as root: umask 022 && easy_install iso8601
     - maybe you'll neede some (python) xml-modules, 

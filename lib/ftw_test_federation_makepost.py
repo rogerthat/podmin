@@ -35,7 +35,7 @@ class login_check_rc(unittest.TestCase):
         self.selenium.start(self)
     
     def test_login_rc(self):
-        
+
         u = self.user
         h = self.host
         p = self.pw
@@ -56,17 +56,25 @@ class login_check_rc(unittest.TestCase):
         try: self.failUnless(sel.is_text_present(""))
         except AssertionError, e: self.verificationErrors.append(str(e))
         self.failUnless(sel.is_text_present("%s" % u))        
+        sel.click("id=status_message_fake_text")
+        sel.type("id=status_message_fake_text", "%s" % c)
+        sel.click("//form[@id='new_status_message']/div[4]/div/div/div")
+        sel.click("css=li.public.radio")
+        sel.click("id=publisher-share")
+        sel.wait("3000")        
+        sel.open("/users/sign_out")
+        sel.wait_for_page_to_load("30000")        
         
 #~ #        sel.click("link=%s@%s" % (user, host))
 #~ #        sel.click("link=Log out")
-        #~ sel.wait_for_page_to_load("30000")
+
     
     def tearDown(self):
         self.selenium.stop()
         self.assertEqual([], self.verificationErrors)
 
 
-def test_login(u, h, p, c):
+def create_fedtest_post(u, h, p, c):
     # i know. it's bad style ... but i'm not the threading_global_var_nerd ... 
     global ok_checks
     global failed_user

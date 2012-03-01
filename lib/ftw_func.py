@@ -6,14 +6,14 @@
 #
 
 
-from ftw import debug, pd, c, conn
+from ftw import debug, pd, c, conn, now_time, now_date
 
 from ftw_config import *
 
 import time, random, hashlib, sys, unittest, threading, socket, MySQLdb
 from selenium import selenium
 
-
+from ftw_test_federation_makepost import *
 
 
         
@@ -235,5 +235,30 @@ def start_test(ud):
     
     
     c.execute(dbx)
+    
+    ## debug only
+    ftwinit = "spambot@c0unt.org"
+    user = ftwinit.split("@")[0]
+    host = ftwinit.split("@")[1]
+    pw = ud[ftwinit]
+    
+    msg = """
+#### federation-test %s
+----------------------------------------
+automated test-entry @ %s
+
+testid: %s
+date: %s
+timestamp: %s
+
+
+#federationtestwarrior 
+
+
+    
+    """ % (now_date, ftwinit, testid, now_date, now_time)
+
+    pd("posting now -> %s " % ftwinit)
+    create_fedtest_post(user, host, pw, msg)
     
     return(testid)

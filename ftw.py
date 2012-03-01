@@ -8,7 +8,7 @@
 #
 #
 
-this_version = "0.1.0"
+this_version = "0.1.2"
 
 import MySQLdb, time, os, sys, getopt
 import subprocess as sub
@@ -25,6 +25,11 @@ from ftw_func import *
 api = api_exec
 
 debug = "yes"
+
+
+now_time = int(time.time())
+now_date = time.strftime("%Y-%m-%d %H:%M UTC+1", time.localtime(time.time()))
+
 
 help_text = """
 
@@ -71,10 +76,10 @@ def pd(debug_input):
 
 
 
-pd("DB::starting db_connection (db-init)")
 try:
     conn = MySQLdb.connect(host=db_host, user=db_user, passwd=db_pass,db=db_db )
     c = conn.cursor()
+    pd("DB::starting db_connection (db-init)")
 
 except:
     print "[-]ERROR DB::db-connection-error (db-init)"
@@ -200,8 +205,7 @@ FAILED: %s
             print "[-] ERROR on db_update for login-test-result \n    [ %s ]" % dbres
         
     elif action == "report":
-        now_time = int(time.time())
-        now_date = time.strftime("%Y-%m-%d %H:%M UTC+1", time.localtime(time.time()))
+
         test_24h = now_time - (24*60*60)
         print """
 > generating results        
