@@ -30,7 +30,7 @@ help_text = """
 
 FTW (Federation-Test-Warrior)
 
-ATENCION!!! this is work-in-progress, not all features
+ATENCION!!! this is work-in-progress AALPHAA, not all features
             are available, please dont use until it's version 0.2
             GRACIAS!
 
@@ -42,20 +42,25 @@ USAGE
     %s -h help
 
 ACTIONS
-    -x start-test   -> starts a test-init 
+    -x start-test   -> initializes a tes 
+
     -x scheduler    -> calls scheduler to execute tests 
+
     -x test-logins  -> checks login for every account from 
                        ftw_user_list
+
+    -x report       -> status-report
+
 **  -x list         -> list running/unfinished tests
 **  -x cleanup      -> closes unfinished tests > close_final_time
-**  -x report       -> interactive status-report
    
 **) not yet, kameraden, not yet!
     
 
-api: %s 
+api     : %s 
+version : %s
 
-""" % (sys.argv[0], sys.argv[0], api)
+""" % (sys.argv[0], sys.argv[0], api, this_version)
 
 
 def pd(debug_input):
@@ -191,7 +196,7 @@ FAILED: %s
         c.execute(dbx)
         print "[+] db updated with login-test-result"
     
-    elif action == "result":
+    elif action == "report":
         now_time = int(time.time())
         now_date = time.strftime("%Y-%m-%d %H:%M UTC+1", time.localtime(time.time()))
         test_24h = now_time - (24*60*60)
@@ -210,15 +215,15 @@ FAILED: %s
             ok_count += int(ok)
             failed_count += int(failed)
         total_count = ok_count + failed_count
+        fail_ratio = float(failed_count)/float(total_count)
         if failed_count == 0:
             result = "perfekt"
-        elif float(failed_count / total_count) > login_test_critical_ratio:
+        elif fail_ratio > login_test_critical_ratio:
             result = "critical"
-        elif float(failed_count / total_count) > login_test_warning_ratio:
+        elif fail_ratio > login_test_warning_ratio:
             result = "warning"
         else:
             result = "ok"
-        
         out_txt = """
 --[ FederationTestWarrior #FTW ]----------------------------------
 
@@ -226,19 +231,21 @@ Login-Test-Result %s
 
 ------------------------------------------------------------------
 
-Overall Status      : %s
-Total OK            : %s
-Total FAILED        : %s
+Overall Status      :  %s
 
-Testruns    (24hrs) : %s
-Total Tests (24hrs) : %s
+Total OK            : %3s
+Total FAILED        : %3s
+Fail Ratio          : %5s
+
+Testruns    (24hrs) : %3s
+Total Tests (24hrs) : %3s
 
 ------------------------------------------------------------------
 
 Long result (24hrs)
-+------------------------+------+------+------------------------------
++------------------------+------+------+--------------------------
 | date                   |  OK  | FAIL | RMKS  
-+------------------------+------+------+------------------------------""" % (now_date, result.upper(), ok_count, failed_count, len(tres), total_count) 
++------------------------+------+------+--------------------------""" % (now_date, result.upper(), ok_count, failed_count, "%s " % int(fail_ratio*100) + "%" ,len(tres), total_count) 
         for res in tres:
             ok = res[0]
             ok_bots = res[1]
@@ -252,7 +259,7 @@ Long result (24hrs)
 | %s | %3s  | %3s  |  %s""" % (out_txt, tstamp, ok, failed, failed_bots)
 
         out_txt = """%s
-+------------------------+------+------+------------------------------
++------------------------+------+------+--------------------------
             SUMMARY      | %3s  | %3s  |
                          +------+------+
             """ % (out_txt, ok_count, failed_count)
