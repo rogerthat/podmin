@@ -7,7 +7,7 @@
 # public available
 #
 
-this_version = "0.1.22"
+this_version = "0.1.24"
 
 import MySQLdb, time, os, sys, getopt
 import subprocess as sub
@@ -171,15 +171,18 @@ for r in res:
         dx = dx.split(" ")[0].replace("\"", " ").strip()
         desc = """\n\n![XKCD](%s) \n\n""" % dx.replace("'", "")
         #print "DESC: %s " % desc 
-    msg = """### ![%s](%s) 
+    msg = """##### [%s](%s) 
 ---------------------------------
-#### Stream  : %s
-#### Link    : %s
+
+**Stream  : %s**
+**Link    : %s**
+
 ---------------------------------
 
 %s 
 
 ---------------------------------
+
 %s :: %s 
 
 #botpost #pistosapibot #%s """ % (title, link, rdf_provider, link, desc,  ts, idx, rdf_provider) 
