@@ -3,13 +3,17 @@ TODO
 api
     -t [type]
     -v [version]
-    
+    - read json from api-request
     -a 1,2,3 -> can be a list of comma-separated values
-
+    http://docs.python.org/library/json.html
     
 ftw
     - get results from unittest.TestResults()
     - thread to keep mysql-connection open?
+    - rewrite using mechanize
+    - log every bot-login-values, not just summary
+    - log login-time
+    - statuscollector for graphs on login-time
     
     result 
         - -o output_dir html/txt
