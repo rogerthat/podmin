@@ -7,15 +7,15 @@ WHAT is it doing?
 
 
 SETUP:
-    
+
     - setup a database and user (mysql)
     - replay doc/create_ftw_db.sql into that database
-    - cp conf/ftw_config.py.template conf/ftw_config.py 
+    - cp conf/ftw_config.py.template conf/ftw_config.py
     - edit conf/ftw_config.py and adjust db-settings
     - cp conf/ftw_users.list.template conf/ftw_users.list
-    - create testaccounts on different pods
+    - create testaccounts on different pods (ask podmins for permission)
     - edit conf/ftw_users.list and setup your testaccounts
-    - test ftw-connections: ./ftw.py -x test#
+    - test ftw-connections: ./ftw.py -x test-logins
     - consult config -> schedule_time_steps to see in what delay
       checks may be performend, adjust to your needs
     - consult config -> warning_time + critcal_time, adjust, if needed
@@ -23,19 +23,19 @@ SETUP:
     - run manually ./ftw.py -x scheduler -d
     - check after some time-delay if ./ftw.py -x scheduler -d is generating
       results
-      
+
     - create a cronjob to generate tests ( every 4 hours)
        42 */4 * * cd /path/to/podmin && ./ftw.py -x start-test
-    
+
     - create a cronjob to run the scheduler (5 min, max 10 minutes delay)
        */5 * * * cd /path/to/podmin && ./ftw.py -x scheduler
 
     - create a cronjob to run the login-tests every hour
       23 * * * * cd /path/to/podmin && ./ftw.py -x test-logins
-    
+
     - create a cronjob to run the report-generator every hour
       32 * * * * cd /path/to/podmin && ./ftw.py -x report > /path/to/docroot/ftw/report.txt
-      
+
 
 
 
@@ -45,7 +45,7 @@ running selenium-server headless:
     - /usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 &
     - export DISPLAY=:99 && /usr/bin/java -jar lib/selenium-server.jar &
 
-    
+
 see stuff/selenium-rc-startscript.sh
 
 

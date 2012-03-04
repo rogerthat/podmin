@@ -1,0 +1,48 @@
+#
+# config for ftw
+#
+
+db_backend="mysql"
+
+# connect to db for data-collection
+db_host = "localhost"
+db_port = 3306
+db_user = "user"
+db_pass = "pass"
+db_db   = "ftw"
+
+# schedules checks after 5/15/30/60min 3/6/12/24hrs
+schedule_time_steps = "5,15,30,60,180,360,720,1440"
+
+##debug
+#schedule_time_steps = "1,3,5,10"
+
+
+# delay between check_execution,
+# usable value: 20/nr of cores
+# test and adjust, on smaller machines
+# and lots of parallel test and a too
+# small value this might sky-rocket your load
+#
+ramp_up_delay = "2"
+
+# how many minutes after even a successfull
+# test becomes warning / critical
+#warning_time = "30"
+#critical_time = "360"
+
+## debug
+warning_time = "30"
+critical_time = "240"
+
+
+ftw_user_list = "conf/ftw_users.list"
+
+
+# selenium-rc
+selenium_server = "localhost"
+selenium_port = 4444
+
+# x 100 = %
+login_test_warning_ratio = 0.2
+login_test_critical_ratio = 0.6

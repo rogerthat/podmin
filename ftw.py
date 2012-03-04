@@ -1,14 +1,14 @@
 #!/usr/bin/python
 #
 #
-# federation-test-warrior 
+# federation-test-warrior
 #
-# testsuite to test the federation-status among 
+# testsuite to test the federation-status among
 # diaspora-pods
 #
 #
 
-this_version = "0.1.2"
+this_version = "0.1.23"
 
 import MySQLdb, time, os, sys, getopt
 import subprocess as sub
@@ -47,22 +47,22 @@ USAGE
     %s -h help
 
 ACTIONS
-    -x start-test   -> initializes a tes 
+    -x start-test   -> initializes a tes
 
-    -x scheduler    -> calls scheduler to execute tests 
+    -x scheduler    -> calls scheduler to execute tests
 
-    -x test-logins  -> checks login for every account from 
+    -x test-logins  -> checks login for every account from
                        ftw_user_list
 
     -x report       -> status-report
 
 **  -x list         -> list running/unfinished tests
 **  -x cleanup      -> closes unfinished tests > close_final_time
-   
-**) not yet, kameraden, not yet!
-    
 
-api     : %s 
+**) not yet, kameraden, not yet!
+
+
+api     : %s
 version : %s
 
 """ % (sys.argv[0], sys.argv[0], api, this_version)
@@ -91,18 +91,18 @@ except:
 
 
 if __name__ == "__main__":
-    
+
     if not os.path.isfile(api):
         print """
-    
-    ERROR -> api not found :: %s 
-        
+
+    ERROR -> api not found :: %s
+
         """ % api
         sys.exit(2)
-        
-    
+
+
     action = 0
-    
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hdx:r:")
     except getopt.GetoptError, err:
@@ -110,50 +110,59 @@ if __name__ == "__main__":
         print " > ERROR on ftw / wrong option "
         print str(err) # will print something like "option -a not recognized"
         print help_text
-        
+
         sys.exit(2)
-    
-    
+
+
     for o, a in opts:
         if o == "-x":
             action = "%s" % a.strip()
         elif o == "-d":
             debug = "yes"
         else:
-            
+
             print help_text
             print "[i] unknown option [ %s ] " % o
             sys.exit()
     sys.argv = [sys.argv[0]]
-    
+
     if action == 0:
         print "[i] unknown action [ %s ] " % action
         print help_text
-        sys.exit()
-    
-    
+        sys.exit(1)
+
+
     rc = check_selenium_rc()
     if rc != 0:
         print "\n\n[-] ERROR [ %s ] ... selenium_rc not started \n\n" % rc
         sys.exit(2)
     else:
         pd("OK Selenium_RemoteControl is up")
-    
-    
+
+
     ud = get_ftw_user_dict()
     pd("%s users loaded form user-dict %s " % (len(ud), ftw_user_list))
-    
+
     if action == "start-test":
-        
+
         testid = start_test(ud)
-        if testid == 0:
+        failed = 0
+        try:
+            int(testid)
             print "\n\n[-] ERROR ... invalid testid \n\n"
-            sys.exit(2)
+            failed = 1
+        except:
+            print """
+[+] OK Test created
+    TestID  : %s
+    Date    : %s
+
+        """ % (testid, now_date)
         # debug only
-    
+
     elif action == "scheduler":
         exec_scheduler(ud)
-        
+
 
     elif action == "test-logins":
         testid = int(time.time())
@@ -179,7 +188,7 @@ if __name__ == "__main__":
         while len(threading.enumerate()) > 1:
             print "[i] %2s checks running, waiting for threads to finish" % (len(threading.enumerate())-1)
             time.sleep(3)
-        
+
         print "\n--[ Login-Test-Results ]----------------------------------------------\n"
 
         if len(ok_user) == len(ud):
@@ -188,14 +197,14 @@ if __name__ == "__main__":
             print "[-] Failed logins [ %s / %s ] " % (len(failed_user), len(ud))
             for fu in failed_user:
                 print "   - %s " % fu
-        
+
         rmks = """OK : %s ::
 FAILED: %s
-        
+
         """ % (" ".join(ok_user), " ".join(failed_user))
         dbx = """SET autocommit=1;
     INSERT INTO test_logins (testid, login_ok, ok_bots, login_failed, failed_bots, remarks)
-    values ('%s', '%s', '%s', '%s', '%s', '%s');    
+    values ('%s', '%s', '%s', '%s', '%s', '%s');
     """ % (testid, len(ok_user), ", ".join(ok_user), len(failed_user), ", ".join(failed_user), rmks)
         pd(dbx)
         dbres = db_exec(dbx)
@@ -203,12 +212,12 @@ FAILED: %s
             print "[+] db updated with login-test-result"
         else:
             print "[-] ERROR on db_update for login-test-result \n    [ %s ]" % dbres
-        
+
     elif action == "report":
 
         test_24h = now_time - (24*60*60)
         print """
-> generating results        
+> generating results
         """
         dbx = "select login_ok, ok_bots, login_failed, failed_bots, testid from test_logins where testid > '%s' " % test_24h
         c.execute(dbx)
@@ -251,8 +260,8 @@ Total Tests (24hrs) : %3s
 
 Long result (24hrs)
 +------------------------+------+------+--------------------------
-| date                   |  OK  | FAIL | RMKS  
-+------------------------+------+------+--------------------------""" % (now_date, result.upper(), ok_count, failed_count, "%s " % int(fail_ratio*100) + "%" ,len(tres), total_count) 
+| date                   |  OK  | FAIL | RMKS
++------------------------+------+------+--------------------------""" % (now_date, result.upper(), ok_count, failed_count, "%s " % int(fail_ratio*100) + "%" ,len(tres), total_count)
         for res in tres:
             ok = res[0]
             ok_bots = res[1]
@@ -261,7 +270,7 @@ Long result (24hrs)
             if int(failed) > 0:
                 failed_bots = "FAILED: %s" % res[3].split("@")[1]
             tstamp = time.strftime("%Y-%m-%d %H:%M UTC+1", time.localtime(float(res[4])))
-            
+
             out_txt =  """%s
 | %s | %3s  | %3s  |  %s""" % (out_txt, tstamp, ok, failed, failed_bots)
 
@@ -270,25 +279,25 @@ Long result (24hrs)
             SUMMARY      | %3s  | %3s  |
                          +------+------+
             """ % (out_txt, ok_count, failed_count)
-        
+
         print out_txt
-    
+
     else:
         print """
-    
+
     [i] Action not yet implemented
-        [ %s ] 
-        
+        [ %s ]
+
         """ % action
-    
-        
+
+
     c.close()
-    
-    
+
+
     print """
-    
-    
+
+
     ... exiting
-    
+
     """
-    
+
