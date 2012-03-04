@@ -1,0 +1,6 @@
+#
+# users.list -> users to use with apispora
+#
+#
+# syntax:
+# user@pod.org :: account-pw :: pistos-api-key (leave emtpy, if not known)
