@@ -3,7 +3,6 @@ Readme for podmin - admintools for diaspora-podmins
 
 
 VERSION:
-    0.2 - FBI - fucking bastards initiative
     0.1 - CIA - chicken is awesome
 
 
@@ -22,6 +21,7 @@ INSTALL
     - you'll need the following python-modules
         - python-mysqldb
         - python-xml
+        - python-mechanize
 
     - as root: umask 022 && easy_install iso8601
     - maybe you'll neede some (python) xml-modules,

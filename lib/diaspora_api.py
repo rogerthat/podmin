@@ -91,11 +91,12 @@ def api_test(user, pw, key):
     resa = 0
     if usr_host in list_of_pistos_pods:
         try:
-            # incase comeone calls with key = "0"
+            # incase someone calls with key = "0"
             int(key)
         except:
             pd("checking now pistos-api for %s" % user)
             resa = papi_test(user, key)
+
     rs = res + resa
     return(rs)
 
@@ -138,7 +139,7 @@ NOTIFICATIONS:
     for idx in dn2:
         for idc in idx:
 
-            print "   %5s   "%   (idc)
+            print "   - %s   "%   (idc)
 
     print "\n\n"
 
@@ -178,9 +179,8 @@ ASPECTS:
 
 
     conn.close()
+    return(0)
 
-#    for entry in data:
-#        print entry
 
 
 def get_user_info(user):
@@ -274,7 +274,7 @@ def api_post(user, pw, msg, aspect_ids=['public']):
     # login
     br.select_form(nr=0)
     # Let's search
-    br.form['user[username]']='%s' % user
+    br.form['user[username]']='%s' % usr_name
     br.form['user[password]']='%s' % pw
     br.submit()
     xd = br.response().info()
@@ -282,11 +282,12 @@ def api_post(user, pw, msg, aspect_ids=['public']):
     # diaspora_cookie
     cookie = xd["set-cookie"].split(";")[0]
 
-    # checking now if i'm logged in'
+    # checking now if i'm logged in (status 200)
     # ok ... not really
     r = br.open('https://%s/stream' % usr_host)
     #pd(r.info())
-
+    html = r.read()
+    #print html
     message = {
         'aspect_ids' : aspect_ids,
         "status_message": { 'text': """%s""" % msg},
@@ -331,8 +332,8 @@ def api_post(user, pw, msg, aspect_ids=['public']):
         print "[-] ]ERROR - status-code (shall be 302): %s" % st
 
     rloc =  response.getheader('location')
-    if rloc != "/aspects":
-        print "[-] ERROR - redirect_location (shall be /aspects): %s" % rloc
+    if rloc.find("/users/sign_in") > -1:
+        print "[-] ERROR - redirect_location (shall be / or /aspects): %s" % rloc
         return(2000)
     data = response.read()
     data
