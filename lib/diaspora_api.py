@@ -91,11 +91,12 @@ def api_test(user, pw, key):
     resa = 0
     if usr_host in list_of_pistos_pods:
         try:
-            # incase comeone calls with key = "0"
+            # incase someone calls with key = "0"
             int(key)
         except:
             pd("checking now pistos-api for %s" % user)
             resa = papi_test(user, key)
+
     rs = res + resa
     return(rs)
 
@@ -138,7 +139,7 @@ NOTIFICATIONS:
     for idx in dn2:
         for idc in idx:
 
-            print "   %5s   "%   (idc)
+            print "   - %s   "%   (idc)
 
     print "\n\n"
 
@@ -178,9 +179,8 @@ ASPECTS:
 
 
     conn.close()
+    return(0)
 
-#    for entry in data:
-#        print entry
 
 
 def get_user_info(user):
