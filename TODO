@@ -6,6 +6,8 @@ api
     - read json from api-request
     -a 1,2,3 -> can be a list of comma-separated values
     http://docs.python.org/library/json.html
+    - get_userinfo must be done outside diaspora_api.py 
+    
     
 ftw
     - get results from unittest.TestResults()

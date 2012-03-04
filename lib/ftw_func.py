@@ -19,10 +19,7 @@ from selenium import selenium
         
 def start_check(u, h, p, c, testid, start_time, init_time):
     # i know. it's bad style ... but i'm not the threading_global_var_nerd ... 
-
-
-
-
+    
     local = threading.local()
     local.user = u
     local.host = h

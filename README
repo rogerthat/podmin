@@ -1,12 +1,20 @@
 Readme for podmin - admintools for diaspora-podmins
 (batteries not yet included)
 
-these tools are in very early alpha-state and might break
-with every commit, so please test carefully with testaccounts 
-first and after every update
 
-see docs/REAME.$tool for more info on usage of each single 
+VERSION:
+    0.2 - FBI - fucking bastards initiative
+    0.1 - CIA - chicken is awesome
+
+
+ATENCION! these tools are in very early alpha-state and might break
+with every commit, so please test carefully with testaccounts
+first and after every update.
+
+see docs/REAME.$tool for more info on usage of each single
 tool
+
+
 
 INSTALL
 
@@ -16,21 +24,21 @@ INSTALL
         - python-xml
 
     - as root: umask 022 && easy_install iso8601
-    - maybe you'll neede some (python) xml-modules, 
+    - maybe you'll neede some (python) xml-modules,
       stacktraces will tell you, which ;-)
-      
+
     - if you want to use ftw (federation test warrior)
       install xvfb ( xorg-x11-Xvfb on redhat)
       install sun-java (6.0.18 or greater)
       install icewasel/firefox from repos
-      
+
 
 Update-Info when you want to pull from git:
 
     - make a copy of your podmin-dir
     - if you have demoins / cronjobs running: stop it
     - git pull
-    - check the tools you need with ./$tool -h for 
+    - check the tools you need with ./$tool -h for
       new or changed options
     - test what you need
     - start engines again

@@ -1,15 +1,15 @@
 REAMDE for apispora
 
 
-apispora is a wrapper for some diaspora-account-actions
-like posting to or checking an account
+apispora is a wrapper for cli-diaspora-account-actions
+like posting to or checking an account; this emulates
+an api that does not yet exists ;-)
 (See ACTIONS for more details)
 
-every command must be executed from the podmin_directory, 
-if you want to execute via cronjob your can do it like this
-(e.g. post some stupid comments every 15 minutes:
-
-*/15 * * * * cd /path/to/podmin && ./apispora.py -u you@pod.org -t "this is my stupid comment\n\neven with linebreaks\n\n#hashtag"
+postings are done using a mix from python-mechanize
+to get a valid login/extract cookie and xsrf-token and
+then a json-call to /status_messages that sends the
+actual message.
 
 
 TOC
@@ -18,49 +18,65 @@ TOC
     EXAMPLES
     CONFIG
     Usage from external tools
-    
+
 
 SETUP:
-    - get your API-KEY (available only on pods running the latest 
+    - get your API-KEY (available only on pods running the latest
       pistos-fork (pistos-1.0.8 or later)
-    - cp conf/users.py.template conf/users.py
-    - edit users.py and set your api_key; 
-      please note: this is python_dictionary_notation, please follow 
-      the examples and be sure to have your username/apikey quoted by 
-      backtick 'value', separated by a : , ended by a comma, 
-      to include multiple accounts 
-      http://docs.python.org/tutorial/datastructures.html#dictionaries
+    - cp conf/users.list.template conf/users.list
+    - edit users.list and setup accounts/pw/api_key;
+      make sure, you follow the right syntax
+
 
 USAGE
-    $ ./apispora.py -h 
+    $ ./apispora.py -h
 
 
 EXAMPLES:
     $ ./apispora.py -u you@pod.org
-            - send defaultmessage to your account
+            - test account
 
+    DONTUSE -a
     $ ./apispora.py -u -a 23,42 you@pod.org
             - send defaultmessage to your account to your aspect_ids
               23,42
 
-    
+
     $ ./apispora.py -u you@pod.org -t "some text \n with linebreaks \n and #hashtags \n\n"
-            - send the text given via -t (if more than one word it must be escaped via 
+            - send the text given via -t (if more than one word it must be escaped via
               "more than one word"
 
     $ ./apispora.py -l
-            - list available accounts from users.py 
+            - list available accounts from users.py
 
-    
-CONFIG:
-    conf/users.py    -> user-dict
 
-    
 
 Usage from external tools:
     - be sure to jump to /path/to/podmin first
     - when calling $ ./apispora.py -u usr@pod.org -t "output of your program"
       replace " in your output to prevent failure, in python its
       message = output.replace("\"", "'")
-      
-      
+
+Use diaspora_api.py as python-module:
+
+    - dont expect anything to work without some hands-on
+    - read the funciton-docstring (if there's any ;-)
+    - deactivate imports as needed
+    - you should have somefunctions like pd(debug_text), see
+      apispora.py on what i mean
+
+    if you include functions, follow these guidlines when calling
+    - user/account -> always user@pod.org; will get stripped into
+      usr_name / usr_host within the function
+
+    - aspect_ids -> always present a list, even if you want to
+      post to one single aspect, like ['public']
+      if not given, defaults to 'public'
+
+
+
+every command must be executed from the podmin_directory,
+if you want to execute via cronjob your can do it like this
+(e.g. post some stupid comments every 15 minutes:
+
+*/15 * * * * cd /path/to/podmin && ./apispora.py -u you@pod.org -t "this is my stupid comment\n\neven with linebreaks\n\n#hashtag"

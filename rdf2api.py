@@ -3,7 +3,7 @@
 #
 # get stuff from the stream an post to apispora
 #
-# please note, this needs a db that is not yet 
+# please note, this needs a db that is not yet
 # public available
 #
 
@@ -52,11 +52,11 @@ def pd(debug_input):
 if not os.path.isfile(api):
     print """
 
-ERROR -> api not found :: %s 
-    
+ERROR -> api not found :: %s
+
     """ % api
     sys.exit(2)
-    
+
 
 
 try:
@@ -66,7 +66,7 @@ except getopt.GetoptError, err:
     print " > ERROR on api / wrong option "
     print str(err) # will print something like "option -a not recognized"
     print helP
-    
+
     sys.exit(2)
 
 
@@ -83,7 +83,7 @@ for o, a in opts:
 
     elif o == "-d":
         debug = "yes"
-        
+
     elif o == "-u":
         bot = "%s" % a
 
@@ -107,14 +107,14 @@ if action == "show":
     print """
 
 Available Bots:
-    
+
     """
     os.system("%s -l" % api)
 
     print """
 
 Available RDF_providers:
-    
+
     """
     prov = "select distinct(provider) from rdf_entries order by provider"
     try:
@@ -129,7 +129,7 @@ Available RDF_providers:
 
     c2.close()
     sys.exit()
-    
+
 if bot == "":
     print helP
     sys.exit()
@@ -170,8 +170,8 @@ for r in res:
         dx = desc.split("src=")[1]
         dx = dx.split(" ")[0].replace("\"", " ").strip()
         desc = """\n\n![XKCD](%s) \n\n""" % dx.replace("'", "")
-        #print "DESC: %s " % desc 
-    msg = """##### [%s](%s) 
+        #print "DESC: %s " % desc
+    msg = """### [%s](%s)
 ---------------------------------
 
 **Stream  : %s**
@@ -179,13 +179,13 @@ for r in res:
 
 ---------------------------------
 
-%s 
+%s
 
 ---------------------------------
 
-%s :: %s 
+%s :: %s
 
-#botpost #pistosapibot #%s """ % (title, link, rdf_provider, link, desc,  ts, idx, rdf_provider) 
+#botpost #pistosapibot #%s """ % (title, link, rdf_provider, link, desc,  ts, idx, rdf_provider)
     #print exe
     dswitch = ""
     if debug == "yes":
@@ -193,7 +193,7 @@ for r in res:
 
     i = sub.call("""%s %s  -x post -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'")), shell=True)
 
-    
+
 
     if i == 0:
         cx = conn2.cursor()
@@ -205,9 +205,9 @@ for r in res:
         time.sleep(2)
     # otherwise -> 503
     time.sleep(5)
-    
-    
-    
+
+
+
 c2.close()
 
 
