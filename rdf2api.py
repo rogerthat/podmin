@@ -16,7 +16,7 @@ import subprocess as sub
 sys.path.append("conf")
 sys.path.append("lib")
 
-from diaspora_api import *
+#from diaspora_api import *
 from rdf_config import *
 
 api = "./apispora.py"

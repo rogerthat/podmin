@@ -1,12 +1,12 @@
 #
 # functions for ftw
 #
-# v0.1.26
+# v0.1.34
 #
 #
 
 
-from ftw import debug, pd, c, conn, now_time, now_date
+from ftw import debug, pd, now_time, now_date
 
 from ftw_config import *
 from diaspora_api import *
@@ -17,6 +17,16 @@ from selenium import selenium
 from ftw_test_federation_makepost import *
 
 
+
+def mysql_keepalive():
+    # obsolete
+    while 1:
+        pd("mysql_keepalive()")
+        cg = conn.cursor()
+        cg.execute("select count(id) from tests;")
+        r = cg.fetchall()
+        time.sleep(5)
+        cg.close()
 
 def start_check(user, pw, check_text, testid, start_time, init_time):
     # i know. it's bad style ... but i'm not the threading_global_var_nerd ...
@@ -106,23 +116,24 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     r = br.open('https://%s/tags/federationtestautomated' % usr_host)
     #pd(r.info())
     stream = r.read()
+
     r = br.open('https://%s/users/sign_out' % usr_host)
     if stream.find("%s" % check_text) > -1:
-        c = conn.cursor()
+        print "[+] OK!! %s successfully found %s" % (user, check_text)
         dbx = "set autocommit=1; update test_results set status = '%s', checked = '1' where testid = '%s' and account = '%s'"% (check_status, testid, user)
-        pd(dbx)
-        c.execute(dbx)
     else:
         #
         outdated_ts = int(schedule_time_steps.split(",")[-1])
         if nt > (int(init_time) + (outdated_ts*60)):
-            dbx = "set autocommit=1; update test_results set status = '3', checked = '1'  where testid = '%s' and account = '%s'"% (testid, user)
+            dbx = "set autocommit=1; update test_results set status = '4', checked = '1'  where testid = '%s' and account = '%s'"% (testid, user)
         else:
-            dbx = "set autocommit=1; update test_results set status = '2'  where testid = '%s' and account = '%s'"% (testid, user)
+            dbx = "set autocommit=1;"
 
-        c = conn.cursor()
-        pd(dbx)
-        c.execute(dbx)
+    pd(dbx)
+    res = db_exec(dbx)
+    if res != 0:
+        print "[-] ERROR on db-insert %s " % dbx
+    return(0)
 
 
 def db_exec(dbx):
@@ -130,19 +141,62 @@ def db_exec(dbx):
     # issue raised during livetests
     #
 
-    attempts = 0
+    try:
+        conn = MySQLdb.connect(host=db_host, user=db_user, passwd=db_pass,db=db_db )
+        pd("DB::starting db_connection (db-init)")
 
+    except:
+        print "[-]ERROR DB::db-connection-error (db-init)"
+        sys.exit(2)
+
+    attempts = 0
+    error = 40404
     while attempts < 5:
         try:
             cx = conn.cursor()
             cx.execute(dbx)
+            cx.close()
+            conn.close()
             return(0)
         except MySQLdb.Error, e:
             error = "MySQL Error %d: %s" % (e.args[0], e.args[1])
             attempts += 1
             print "try: %s" % attempts
             print error
+            time.sleep(0.1)
+            error = e.args[0]
+    conn.close()
+    return(error)
 
+
+def db_fetch(dbx):
+
+    try:
+        conn = MySQLdb.connect(host=db_host, user=db_user, passwd=db_pass,db=db_db )
+        pd("DB::starting db_connection (db-init)")
+
+    except:
+        print "[-]ERROR DB::db-connection-error (db-init)"
+        sys.exit(2)
+
+    attempts = 0
+    error = 50505
+    while attempts < 5:
+        try:
+            cx = conn.cursor()
+            cx.execute(dbx)
+            res = cx.fetchall()
+            conn.close()
+
+            return(res)
+        except MySQLdb.Error, e:
+            error = "MySQL Error %d: %s" % (e.args[0], e.args[1])
+            attempts += 1
+            print "try: %s" % attempts
+            print error
+            time.sleep(0.1)
+            error = e.args[0]
+    conn.close()
     return(error)
 
 
@@ -159,44 +213,90 @@ def exec_scheduler(ud):
 
     # dont check if older than outdated_timew
     # select only one test at a time
-    dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time < '%s' and schedules.start_time > '%s' order by schedules.start_time LIMIT 1;" % (now_time, outdated_time)
-    c.execute(dbx)
-    res = c.fetchall()
+    dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time < '%s' and schedules.start_time > '%s' order by schedules.start_time LIMIT 5;" % (now_time, outdated_time)
+
+    res = db_fetch(dbx)
+
+    try:
+        int(res)
+        print "[-] ERROR [%s] while trying to get results for scheduler" % res
+        return(res)
+    except:
+        # we got result, even if emtpy
+        pass
+
     if res == ():
         print "[i] no checks found for execution"
-        return()
-    testid = res[0][0]
-    ftwinit = res[0][1]
-    start_time = res[0][2]
-    init_time = res[0][2]
 
-    cst = time.strftime("%F - %H:%M", time.localtime(float(start_time)))
-    pd("starting scheduled test %s :: %s " % (cst, testid))
-    dbx = "SELECT account from test_results where testid = '%s' and checked != '1' and account != '%s' " % (testid, ftwinit)
-    c.execute(dbx)
-    accounts = c.fetchall()
-    pd("checking %s accounts from selection" % len(accounts))
-    if accounts == ():
-        print "[i] no accounts found for execution"
-    for account in accounts:
-        account = account[0]
-        host = account.split("@")[1]
-        user = account.split("@")[0]
-        pw = ud[account]
-        find_text = "ftw.%s" % testid
-        print "[i] checking login for %s " % account
-        threads = []
-        t = threading.Thread(target=start_check, args=(account, pw, find_text, testid, start_time, init_time))
-        threads.append(t)
-        t.start()
-        time.sleep(1)
-    while len(threading.enumerate()) > 1:
-        print "[i] %2s checks running, waiting for threads to finish" % (len(threading.enumerate())-1)
-        time.sleep(5)
 
-    dbx = "set autocommit=1; update schedules set status = '1' where testid = '%s' and start_time = '%s'"% (testid, start_time)
-    pd(dbx)
-    c.execute(dbx)
+    for xt in res:
+        print xt
+        testid = xt[0]
+        ftwinit = xt[1]
+        start_time = xt[2]
+        init_time = xt[3]
+
+        cst = time.strftime("%F - %H:%M", time.localtime(float(start_time)))
+        pd("starting scheduled test %s :: %s " % (cst, testid))
+        print "[i] starting check for %s " % testid
+        dbx = "SELECT account from test_results where testid = '%s' and checked != '1' and account != '%s' " % (testid, ftwinit)
+        res = db_fetch(dbx)
+
+        try:
+            int(res)
+            print "[-] ERROR [%s] while trying to get results for scheduler" % res
+            return(res)
+        except:
+            # we got result, even if emtpy
+            pass
+        accounts = res
+        pd("checking %s accounts from selection" % len(accounts))
+        if accounts == ():
+            print "[i] no accounts found for execution"
+        for account in accounts:
+            account = account[0]
+            host = account.split("@")[1]
+            user = account.split("@")[0]
+            try:
+                pw = ud[account]
+            except:
+                print "[-] ERROR ... cannot find pw for %s " % account
+                continue
+            find_text = "ftw.%s" % testid
+            print "[i] checking login for %s " % account
+            threads = []
+            try:
+                t = threading.Thread(target=start_check, args=(account, pw, find_text, testid, start_time, init_time))
+                threads.append(t)
+                t.start()
+                time.sleep(1)
+            except:
+                time.sleep(3)
+                start_check(account, pw, find_text, testid, start_time, init_time)
+
+        max_runtime = 90 # seconds
+        while len(threading.enumerate()) > 1:
+            xt = int(time.time())
+            if xt - now_time > max_runtime:
+                t.join()
+                break
+            print "[i] %2s checks running, waiting for threads to finish" % (len(threading.enumerate())-1)
+            time.sleep(5)
+
+        #~ # debug - keep alive 3 min to see if mysql stays open
+        #~ print "debug-sleeping"
+        #~ time.sleep(120)
+
+
+        dbx = "set autocommit=1; update schedules set status = '1' where testid = '%s' and start_time = '%s'"% (testid, start_time)
+        res = db_exec(dbx)
+        if res != 0:
+            print "[-] ERROR [ %s ] while trying to update scheduler-table" % res
+            pd(dbx)
+        else:
+            print "[+] run finished %s :: %s " % (ftwinit, testid)
+        time.sleep(2)
+
 
 
     return(0)
@@ -220,6 +320,9 @@ def get_ftw_user_dict():
     return(ud)
 
 def check_selenium_rc():
+
+    # obsolete
+    return(0)
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -264,7 +367,8 @@ def start_test(ud):
     pd("ftwinit : %s" % ftwinit)
 
     pw = ud[ftwinit]
-
+    usr_name = ftwinit.split("@")[0].strip()
+    usr_host = ftwinit.split("@")[1].strip()
     msg = """
 ##### federation-test %s
 ----------------------------------------
@@ -273,13 +377,14 @@ automated test-entry @ %s
 testid: ftw.%s
 date: %s
 timestamp: %s
+botlink: https://%s/u/%s
 
 
 #federationtestwarrior #federationtestautomated
 
 
 
-    """ % (now_date, ftwinit, testid, now_date, now_time)
+    """ % (now_date, ftwinit, testid, now_date, now_time, usr_host, usr_name)
 
 
     pd("posting now -> %s " % ftwinit)
@@ -319,9 +424,12 @@ timestamp: %s
     values ('%s', '%s', '0');
     """ % (dbx, val, testid, s_time)
 
-
-    c.execute(dbx)
-
+    res = db_exec(dbx)
+    if res != 0:
+        print "[-] ERROR [ %s ] while trying to create test + scheduler-entries" % res
+        pd(dbx)
+    else:
+        print "[+] OK Test created  %s :: %s " % (ftwinit, testid)
     print msg
 
 

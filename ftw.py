@@ -8,7 +8,7 @@
 #
 #
 
-this_version = "0.1.23"
+this_version = "0.1.28"
 
 import MySQLdb, time, os, sys, getopt
 import subprocess as sub
@@ -58,6 +58,7 @@ ACTIONS
 
 **  -x list         -> list running/unfinished tests
 **  -x cleanup      -> closes unfinished tests > close_final_time
+**  -x init         -> cleanup db and delete all entries
 
 **) not yet, kameraden, not yet!
 
@@ -76,14 +77,7 @@ def pd(debug_input):
 
 
 
-try:
-    conn = MySQLdb.connect(host=db_host, user=db_user, passwd=db_pass,db=db_db )
-    c = conn.cursor()
-    pd("DB::starting db_connection (db-init)")
 
-except:
-    print "[-]ERROR DB::db-connection-error (db-init)"
-    sys.exit(2)
 
 
 # some global-vars
@@ -91,6 +85,8 @@ except:
 
 
 if __name__ == "__main__":
+
+    #thread.start_new_thread(mysql_keepalive, (),)
 
     if not os.path.isfile(api):
         print """
@@ -153,11 +149,10 @@ if __name__ == "__main__":
             failed = 1
         except:
             print """
-[+] OK Test created
-    TestID  : %s
-    Date    : %s
 
-        """ % (testid, now_date)
+[+] OK Test created
+
+        """
         # debug only
 
     elif action == "scheduler":
@@ -207,7 +202,7 @@ FAILED: %s
     values ('%s', '%s', '%s', '%s', '%s', '%s');
     """ % (testid, len(ok_user), ", ".join(ok_user), len(failed_user), ", ".join(failed_user), rmks)
         pd(dbx)
-        dbres = db_exec(dbx)
+        res = db_exec(dbx)
         if dbres == 0:
             print "[+] db updated with login-test-result"
         else:
@@ -220,8 +215,14 @@ FAILED: %s
 > generating results
         """
         dbx = "select login_ok, ok_bots, login_failed, failed_bots, testid from test_logins where testid > '%s' " % test_24h
-        c.execute(dbx)
-        tres = c.fetchall()
+        res = db_fetch(dbx)
+        try:
+            int(res)
+            print "[-] ERROR [%s] while trying to get results for report" % res
+            sys.exit(2)
+        except:
+            # we got result, even if emtpy
+            pass
         ok_count = 0
         failed_count = 0
         total_count = 0
@@ -290,8 +291,6 @@ Long result (24hrs)
 
         """ % action
 
-
-    c.close()
 
 
     print """

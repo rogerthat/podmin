@@ -22,6 +22,7 @@ INSTALL
         - python-mysqldb
         - python-xml
         - python-mechanize
+        - python-simplejson
 
     - as root: umask 022 && easy_install iso8601
     - maybe you'll neede some (python) xml-modules,

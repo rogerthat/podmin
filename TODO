@@ -1,20 +1,16 @@
 TODO
 
 api
-    -t [type]
-    -v [version]
-    - read json from api-request
+    -t [api-type] generic, pistos
+    -v [api-version]
     -a 1,2,3 -> can be a list of comma-separated values
     http://docs.python.org/library/json.html
-    - get_userinfo must be done outside diaspora_api.py 
-    
+    - fix that bug in #from diaspora_api import *
     
 ftw
-    - get results from unittest.TestResults()
+
     - thread to keep mysql-connection open?
-    - rewrite using mechanize
-    - log every bot-login-values, not just summary
-    - log login-time
+    - log every bot-login-values, not just summary incl. time etc
     - statuscollector for graphs on login-time
     
     result 

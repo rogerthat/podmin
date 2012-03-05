@@ -220,8 +220,10 @@ def _parse_xml(content):
         if handler and node.nodeType == node.ELEMENT_NODE:
             handler(node, obj)
     
-    # hack by roger -> diaspora display wrong hcard
-    #print "XXX :: \n%s" % content
+    # hack by rogerz -> diaspora display wrong hcard
+    # https://github.com/Pistos/diaspora/issues/81
+    # print "XXX :: \n%s" % content
+#    doc = parseString(content)
     doc = parseString(content.replace("&quot;", "\""))
     root = doc.documentElement
     
