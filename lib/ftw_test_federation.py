@@ -53,20 +53,21 @@ class login_check_rc(unittest.TestCase):
         sel.wait_for_page_to_load("30000")
         sel.open("/stream")
         sel.wait_for_page_to_load("30000")
-        try: self.failUnless(sel.is_text_present(""))
-        except AssertionError, e: self.verificationErrors.append(str(e))
-        self.failUnless(sel.is_text_present("%s" % u))        
-        
+        self.failUnless(sel.is_text_present("%s" % c))
+        print "[D] checking %s@%s for %s" % (u,h,c) 
+        #~ try: self.failUnless(sel.is_text_present("%s" % u))
+        #~ except AssertionError, e: self.verificationErrors.append(str(e))
+        sel.open("/users/sign_out")
 #~ #        sel.click("link=%s@%s" % (user, host))
 #~ #        sel.click("link=Log out")
-        #~ sel.wait_for_page_to_load("30000")
+        sel.wait_for_page_to_load("30000")
     
     def tearDown(self):
         self.selenium.stop()
         self.assertEqual([], self.verificationErrors)
 
 
-def test_login(u, h, p, c):
+def ftw_check(u, h, p, c):
     # i know. it's bad style ... but i'm not the threading_global_var_nerd ... 
     global ok_checks
     global failed_user
@@ -84,8 +85,6 @@ def test_login(u, h, p, c):
     except SystemExit, res:
         res = str(res)
         if res == "False":
-            print "[+] OK   %s@%s " % (u, h) 
-            ok_user.append("%s@%s" % (u, h))
+            return(0)
         else:
-            print "[-] ERROR %s@%s :: errno: %s" % (u, h, res ) 
-            failed_user.append("%s@%s" % (u, h))
+            return(1)

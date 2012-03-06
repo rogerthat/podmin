@@ -7,9 +7,16 @@
 version = "0.0.0.1"
 
 
-import getpass, cgi, time, glob, string, hashlib
-sys.path.append("../lib")
-sys.path.append("../conf")
+import getpass, cgi, time, glob, string, hashlib, sys
+
+podmin_root = "../"
+podmin_lib = "%s/lib" % podmin_root
+podmin_conf = "%s/conf" % podmin_root
+
+sys.path.append(podmin_root)
+sys.path.append(podmin_conf)
+sys.path.append(podmin_lib)
+
 
 from ftw_config import *
 from ftw_func import *

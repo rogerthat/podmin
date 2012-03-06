@@ -1,7 +1,7 @@
 #
 # functions for ftw
 #
-# v0.1.34
+# v0.1.44
 #
 #
 
@@ -15,18 +15,20 @@ import time, random, hashlib, sys, unittest, threading, socket, MySQLdb
 from selenium import selenium
 
 from ftw_test_federation_makepost import *
+from ftw_test_federation import *
 
 
 
 def mysql_keepalive():
     # obsolete
-    while 1:
-        pd("mysql_keepalive()")
-        cg = conn.cursor()
-        cg.execute("select count(id) from tests;")
-        r = cg.fetchall()
-        time.sleep(5)
-        cg.close()
+    return()
+    #~ while 1:
+        #~ pd("mysql_keepalive()")
+        #~ cg = conn.cursor()
+        #~ cg.execute("select count(id) from tests;")
+        #~ r = cg.fetchall()
+        #~ time.sleep(5)
+        #~ cg.close()
 
 def start_check(user, pw, check_text, testid, start_time, init_time):
     # i know. it's bad style ... but i'm not the threading_global_var_nerd ...
@@ -49,75 +51,94 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
         return(1000)
 
 
-    # starting to post -> using login/json via mechanize
-    br = mechanize.Browser()
+    nt = int(time.time())
+    wt = (int(init_time) + (60*int(warning_time)))
+    ct = (int(init_time) + (60*int(critical_time)))
 
-    # Cookie Jar
-    cj = cookielib.LWPCookieJar()
-    br.set_cookiejar(cj)
-
-    # Browser options
-    br.set_handle_equiv(True)
-    br.set_handle_gzip(False)
-    br.set_handle_redirect(True)
-    br.set_handle_referer(False)
-    br.set_handle_robots(False)
-
-    # Follows refresh 0 but not hangs on refresh > 0
-    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-
-    # Want debugging messages?
-    if debug == "yes":
-        br.set_debug_http(True)
-        br.set_debug_redirects(True)
-        br.set_debug_responses(True)
-
-    # User-Agent (this is cheating, ok?)
-    br.addheaders = [('Connection', 'keep-alive'), ('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-
-
-    # Open some site, let's pick a random one, the first that pops in mind:
-    try:
-        r = br.open('https://%s/users/sign_in' % usr_host, timeout=10)
-    except mechanize.HTTPError, e:
-        print 'ERROR! The server couldn\'t fulfill the request.'
-        print 'Error code: ', e.code
-        return(e.code)
-    except mechanize.URLError, e:
-        print 'We failed to reach a server.'
-        print 'Reason: ', e.reason
-        return(404)
-
-
-    html = r.read()
-
-    pd(r.info())
-
-    csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
-    pd("csrf PURE    : %s" % csrf)
-    h =  HTMLParser.HTMLParser()
-    csrftoken = h.unescape(csrf)
-    pd("csrf eascaped: %s" % csrftoken)
-    # Show the response headers
-
-
-    # login
-    br.select_form(nr=0)
-    # Let's search
-    br.form['user[username]']='%s' % usr_name
-    br.form['user[password]']='%s' % pw
-    br.submit()
-    xd = br.response().info()
-
-    # diaspora_cookie
-    cookie = xd["set-cookie"].split(";")[0]
-
-    # checking now tag #federationtesautomated
-    r = br.open('https://%s/tags/%s' % (usr_host, check_tag))
+    # looks like mechanize dioesnt werk with displaying the stream??? 
+    #~ # starting to post -> using login/json via mechanize
+    #~ br = mechanize.Browser()
+#~ 
+    #~ # Cookie Jar
+    #~ cj = cookielib.LWPCookieJar()
+    #~ br.set_cookiejar(cj)
+#~ 
+    #~ # Browser options
+    #~ br.set_handle_equiv(True)
+    #~ br.set_handle_gzip(False)
+    #~ br.set_handle_redirect(True)
+    #~ br.set_handle_referer(False)
+    #~ br.set_handle_robots(False)
+#~ 
+    #~ # Follows refresh 0 but not hangs on refresh > 0
+    #~ br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+#~ 
+    #~ # Want debugging messages?
+    #~ if debug == "yes":
+        #~ br.set_debug_http(True)
+        #~ br.set_debug_redirects(True)
+        #~ br.set_debug_responses(True)
+#~ 
+    #~ # User-Agent (this is cheating, ok?)
+    #~ br.addheaders = [('Connection', 'keep-alive'), ('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+#~ 
+#~ 
+    #~ # Open some site, let's pick a random one, the first that pops in mind:
+    #~ try:
+        #~ r = br.open('https://%s/users/sign_in' % usr_host, timeout=10)
+    #~ except mechanize.HTTPError, e:
+        #~ print 'ERROR! The server couldn\'t fulfill the request.'
+        #~ print 'Error code: ', e.code
+        #~ return(e.code)
+    #~ except mechanize.URLError, e:
+        #~ print 'We failed to reach a server.'
+        #~ print 'Reason: ', e.reason
+        #~ return(404)
+#~ 
+#~ 
+    #~ html = r.read()
+#~ 
+    #~ pd(r.info())
+#~ 
+    #~ csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
+    #~ pd("csrf PURE    : %s" % csrf)
+    #~ h =  HTMLParser.HTMLParser()
+    #~ csrftoken = h.unescape(csrf)
+    #~ pd("csrf eascaped: %s" % csrftoken)
+    #~ # Show the response headers
+#~ 
+#~ 
+    #~ # login
+    #~ br.select_form(nr=0)
+    #~ # Let's search
+    #~ br.form['user[username]']='%s' % usr_name
+    #~ br.form['user[password]']='%s' % pw
+    #~ br.submit()
+    #~ xd = br.response().info()
+#~ 
+    #~ # diaspora_cookie
+    #~ cookie = xd["set-cookie"].split(";")[0]
+#~ 
+    #~ # checking now tag #federationtesautomated
+    #~ r = br.open('https://%s/%s' % (usr_host, check_tag))
     #pd(r.info())
-    stream = r.read()
+    
+    #~ ## debug only
+    #~ stream = r.read(100000)
+    #~ print stream
+    #~ raw_input("> %s should find: %s \n> [enter] ::" % (user, testid))
+    #~ 
+    #~ ##
+    #~ 
 
-    if stream.find("%s" % check_text) > -1:
+
+    # making some default
+    dbx = "set autocommit=1;"
+
+    tres = ftw_check(usr_name, usr_host, pw, check_text)
+        
+    if tres == 0:
+
         print "[+] OK!! %s successfully found %s" % (user, check_text)
         dbx = "set autocommit=1; update test_results set status = '%s', checked = '1' where testid = '%s' and account = '%s'"% (check_status, testid, user)
     else:
@@ -125,11 +146,7 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
         outdated_ts = int(schedule_time_steps.split(",")[-1])
         if nt > (int(init_time) + (outdated_ts*60)):
             dbx = "set autocommit=1; update test_results set status = '4', checked = '1'  where testid = '%s' and account = '%s'"% (testid, user)
-        else:
-            dbx = "set autocommit=1;"
-
-    r = br.open('https://%s/users/sign_out' % usr_host)
-
+    
 
     pd(dbx)
     res = db_exec(dbx)
@@ -202,6 +219,41 @@ def db_fetch(dbx):
     return(error)
 
 
+def list_schedules():
+    
+    now_time = int(time.time())
+    dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time > '%s' order by schedules.start_time LIMIT 5;" % (now_time)
+
+    ress = db_fetch(dbx)
+
+    try:
+        int(res)
+        print "[-] ERROR [%s] while trying to get results for scheduler" % res
+        return(res)
+    except:
+        # we got result, even if emtpy
+        pass
+    print "[i] next 5 Tests: "
+    for st in ress:
+        testid = st[0]
+        ftwinit = st[1]
+        start_time = st[2]
+        init_time = st[3]
+        time_till_run = (int(start_time) - int(now_time)) / 60
+        start_date = time.strftime("%H:%M", time.localtime(float(start_time)))
+        init_date = time.strftime("%Y-%m-%d %H:%M", time.localtime(float(init_time)))
+        print """
+
+--[ %15s ]-------------------------------------------
+
+TestID          : %s
+Test Started    : %s 
+Next Run        : %s 
+Time Left       : %s minutes
+        
+        """ % (ftwinit, testid, init_date, start_date, time_till_run,  )
+
+
 def exec_scheduler(ud):
 
 
@@ -230,37 +282,7 @@ def exec_scheduler(ud):
     if res == ():
         print "[i] no checks found for execution"
 
-        dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time > '%s'  LIMIT 5;" % (now_time)
-    
-        ress = db_fetch(dbx)
-    
-        try:
-            int(res)
-            print "[-] ERROR [%s] while trying to get results for scheduler" % res
-            return(res)
-        except:
-            # we got result, even if emtpy
-            pass
-        print "[i] next 5 Tests: "
-        for st in ress:
-            testid = st[0]
-            ftwinit = st[1]
-            start_time = st[2]
-            init_time = st[3]
-            time_till_run = (int(start_time) - int(now_time)) / 60
-            start_date = time.strftime("%H:%M", time.localtime(float(start_time)))
-            init_date = time.strftime("%Y-%m-%d %H:%M", time.localtime(float(init_time)))
-            print """
-
---[ %15s ]-------------------------------------------
-
-TestID      : %s
-StartAt     : %s 
-TimeLeft    : %s minutes
-Started     : %s 
-            
-            """ % (ftwinit, testid, start_date, time_till_run,  init_date)
-            
+        list_schedules()
             
         
 
@@ -297,9 +319,12 @@ Started     : %s
             except:
                 print "[-] ERROR ... cannot find pw for %s " % account
                 continue
-            find_text = "ftw.%s" % testid.strip()
             print "[i] checking login for %s " % account
             threads = []
+
+            find_text = "ftw.%s" % testid.strip()
+            ##debug
+            #find_text = "ftw"
             try:
                 t = threading.Thread(target=start_check, args=(account, pw, find_text, testid, start_time, init_time))
                 threads.append(t)

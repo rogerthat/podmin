@@ -1,6 +1,7 @@
 #
 # config for ftw
 #
+# v0.2.5
 
 db_backend="mysql"
 
@@ -37,6 +38,9 @@ critical_time = "240"
 
 
 ftw_user_list = "conf/ftw_users.list"
+
+# check-specifix
+check_tag = "/tag_followings" # -> https://pod.org/tags/$check_tag on checking posts
 
 
 # selenium-rc

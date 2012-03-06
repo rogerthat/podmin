@@ -31,7 +31,9 @@ INSTALL
     - if you want to use ftw (federation test warrior)
       install xvfb ( xorg-x11-Xvfb on redhat)
       install sun-java (6.0.18 or greater)
-      install icewasel/firefox from repos
+      install icewasel/firefox from repos ( actual version, 
+      for squeeze see http://mozilla.debian.net/
+      
 
 
 Update-Info when you want to pull from git:

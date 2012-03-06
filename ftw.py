@@ -56,7 +56,8 @@ ACTIONS
 
     -x report       -> status-report
 
-**  -x list         -> list running/unfinished tests
+    -x list         -> list upcoming tests
+
 **  -x cleanup      -> closes unfinished tests > close_final_time
 **  -x init         -> cleanup db and delete all entries
 
@@ -158,6 +159,8 @@ if __name__ == "__main__":
     elif action == "scheduler":
         exec_scheduler(ud)
 
+    elif action == "list":
+        list_schedules()
 
     elif action == "test-logins":
         testid = int(time.time())
@@ -203,7 +206,7 @@ FAILED: %s
     """ % (testid, len(ok_user), ", ".join(ok_user), len(failed_user), ", ".join(failed_user), rmks)
         pd(dbx)
         res = db_exec(dbx)
-        if dbres == 0:
+        if res == 0:
             print "[+] db updated with login-test-result"
         else:
             print "[-] ERROR on db_update for login-test-result \n    [ %s ]" % dbres
