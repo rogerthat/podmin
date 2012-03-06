@@ -58,8 +58,9 @@ ACTIONS
 
     -x list         -> list upcoming tests
 
+    -x init         -> cleanup db and delete all entries
+
 **  -x cleanup      -> closes unfinished tests > close_final_time
-**  -x init         -> cleanup db and delete all entries
 
 **) not yet, kameraden, not yet!
 
@@ -161,6 +162,9 @@ if __name__ == "__main__":
 
     elif action == "list":
         list_schedules()
+
+    elif action == "init":
+        init_db()
 
     elif action == "test-logins":
         testid = int(time.time())

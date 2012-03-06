@@ -13,34 +13,25 @@ failed_user = []
 class login_check_rc(unittest.TestCase):
 
 
-    #~ def __init__():
-        #~ print local.__dict__
-        #~ self.host  = local.__dict__["h"]
-        #~ self.user  = local.__dict__["u"]
-        #~ self.pw    = local.__dict__["p"]
-        #~ self.check_text  = local.__dict__["c"]
-        
-
-
     def setUp(self):
 
         self.host  = local.__dict__["h"]
         self.user  = local.__dict__["u"]
         self.pw    = local.__dict__["p"]
         self.check_text  = local.__dict__["c"]
-        
+
         self.verificationErrors = []
         #pd("connecting %s " % self.host)
         self.selenium = selenium("localhost", 4444, "*chrome", "https://%s/" % self.host)
         self.selenium.start(self)
-    
+
     def test_login_rc(self):
-        
+
         u = self.user
         h = self.host
         p = self.pw
         c = self.check_text
-        
+
         #print local.__dict__
         #pd("testing now: [ %s@%s ] " % (u, h))
         sel = self.selenium
@@ -51,35 +42,34 @@ class login_check_rc(unittest.TestCase):
         sel.type("id=user_password", "%s" % p)
         sel.click("id=user_submit")
         sel.wait_for_page_to_load("30000")
-        sel.open("/stream")
+        sel.open("/tags/federationtestautomated")
         sel.wait_for_page_to_load("30000")
         self.failUnless(sel.is_text_present("%s" % c))
-        print "[D] checking %s@%s for %s" % (u,h,c) 
         #~ try: self.failUnless(sel.is_text_present("%s" % u))
         #~ except AssertionError, e: self.verificationErrors.append(str(e))
         sel.open("/users/sign_out")
 #~ #        sel.click("link=%s@%s" % (user, host))
 #~ #        sel.click("link=Log out")
         sel.wait_for_page_to_load("30000")
-    
+
     def tearDown(self):
         self.selenium.stop()
         self.assertEqual([], self.verificationErrors)
 
 
 def ftw_check(u, h, p, c):
-    # i know. it's bad style ... but i'm not the threading_global_var_nerd ... 
+    # i know. it's bad style ... but i'm not the threading_global_var_nerd ...
     global ok_checks
     global failed_user
     global local
-    
+
     local = threading.local()
     local.u = u
     local.h = h
     local.p = p
     local.c = c
     #print local.__dict__
-    
+
     try:
         unittest.main()
     except SystemExit, res:

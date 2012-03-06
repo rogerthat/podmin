@@ -55,34 +55,34 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     wt = (int(init_time) + (60*int(warning_time)))
     ct = (int(init_time) + (60*int(critical_time)))
 
-    # looks like mechanize dioesnt werk with displaying the stream??? 
+    # looks like mechanize dioesnt werk with displaying the stream???
     #~ # starting to post -> using login/json via mechanize
     #~ br = mechanize.Browser()
-#~ 
+#~
     #~ # Cookie Jar
     #~ cj = cookielib.LWPCookieJar()
     #~ br.set_cookiejar(cj)
-#~ 
+#~
     #~ # Browser options
     #~ br.set_handle_equiv(True)
     #~ br.set_handle_gzip(False)
     #~ br.set_handle_redirect(True)
     #~ br.set_handle_referer(False)
     #~ br.set_handle_robots(False)
-#~ 
+#~
     #~ # Follows refresh 0 but not hangs on refresh > 0
     #~ br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-#~ 
+#~
     #~ # Want debugging messages?
     #~ if debug == "yes":
         #~ br.set_debug_http(True)
         #~ br.set_debug_redirects(True)
         #~ br.set_debug_responses(True)
-#~ 
+#~
     #~ # User-Agent (this is cheating, ok?)
     #~ br.addheaders = [('Connection', 'keep-alive'), ('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-#~ 
-#~ 
+#~
+#~
     #~ # Open some site, let's pick a random one, the first that pops in mind:
     #~ try:
         #~ r = br.open('https://%s/users/sign_in' % usr_host, timeout=10)
@@ -94,20 +94,20 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
         #~ print 'We failed to reach a server.'
         #~ print 'Reason: ', e.reason
         #~ return(404)
-#~ 
-#~ 
+#~
+#~
     #~ html = r.read()
-#~ 
+#~
     #~ pd(r.info())
-#~ 
+#~
     #~ csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
     #~ pd("csrf PURE    : %s" % csrf)
     #~ h =  HTMLParser.HTMLParser()
     #~ csrftoken = h.unescape(csrf)
     #~ pd("csrf eascaped: %s" % csrftoken)
     #~ # Show the response headers
-#~ 
-#~ 
+#~
+#~
     #~ # login
     #~ br.select_form(nr=0)
     #~ # Let's search
@@ -115,38 +115,38 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     #~ br.form['user[password]']='%s' % pw
     #~ br.submit()
     #~ xd = br.response().info()
-#~ 
+#~
     #~ # diaspora_cookie
     #~ cookie = xd["set-cookie"].split(";")[0]
-#~ 
+#~
     #~ # checking now tag #federationtesautomated
     #~ r = br.open('https://%s/%s' % (usr_host, check_tag))
     #pd(r.info())
-    
+
     #~ ## debug only
     #~ stream = r.read(100000)
     #~ print stream
     #~ raw_input("> %s should find: %s \n> [enter] ::" % (user, testid))
-    #~ 
+    #~
     #~ ##
-    #~ 
+    #~
 
 
     # making some default
     dbx = "set autocommit=1;"
 
     tres = ftw_check(usr_name, usr_host, pw, check_text)
-        
+
     if tres == 0:
 
         print "[+] OK!! %s successfully found %s" % (user, check_text)
-        dbx = "set autocommit=1; update test_results set status = '%s', checked = '1' where testid = '%s' and account = '%s'"% (check_status, testid, user)
+        dbx = "set autocommit=1; update test_results set status = '%s', checked = '1', checked_time = '%s' where testid = '%s' and account = '%s'"% (check_status, nt, testid, user)
     else:
         #
         outdated_ts = int(schedule_time_steps.split(",")[-1])
         if nt > (int(init_time) + (outdated_ts*60)):
             dbx = "set autocommit=1; update test_results set status = '4', checked = '1'  where testid = '%s' and account = '%s'"% (testid, user)
-    
+
 
     pd(dbx)
     res = db_exec(dbx)
@@ -220,7 +220,7 @@ def db_fetch(dbx):
 
 
 def list_schedules():
-    
+
     now_time = int(time.time())
     dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time > '%s' order by schedules.start_time LIMIT 5;" % (now_time)
 
@@ -247,11 +247,16 @@ def list_schedules():
 --[ %15s ]-------------------------------------------
 
 TestID          : %s
-Test Started    : %s 
-Next Run        : %s 
+Test Started    : %s
+Next Run        : %s
 Time Left       : %s minutes
-        
+
         """ % (ftwinit, testid, init_date, start_date, time_till_run,  )
+
+
+def init_db():
+    pass
+
 
 
 def exec_scheduler(ud):
@@ -283,11 +288,10 @@ def exec_scheduler(ud):
         print "[i] no checks found for execution"
 
         list_schedules()
-            
-        
+
+
 
     for xt in res:
-        print xt
         testid = xt[0]
         ftwinit = xt[1]
         start_time = xt[2]
@@ -307,7 +311,7 @@ def exec_scheduler(ud):
             # we got result, even if emtpy
             pass
         accounts = res
-        pd("checking %s accounts from selection" % len(accounts))
+        print "[i] checking %s accounts from selection" % len(accounts)
         if accounts == ():
             print "[i] no accounts found for execution"
         for account in accounts:
@@ -319,7 +323,7 @@ def exec_scheduler(ud):
             except:
                 print "[-] ERROR ... cannot find pw for %s " % account
                 continue
-            print "[i] checking login for %s " % account
+            print "[i] checking #ftw for %s " % account
             threads = []
 
             find_text = "ftw.%s" % testid.strip()
@@ -329,8 +333,9 @@ def exec_scheduler(ud):
                 t = threading.Thread(target=start_check, args=(account, pw, find_text, testid, start_time, init_time))
                 threads.append(t)
                 t.start()
-                time.sleep(1)
+                time.sleep(int(ramp_up_delay))
             except:
+                print "thread-exeption"
                 time.sleep(3)
                 start_check(account, pw, find_text, testid, start_time, init_time)
 
@@ -355,7 +360,7 @@ def exec_scheduler(ud):
             pd(dbx)
         else:
             print "[+] run finished %s :: %s " % (ftwinit, testid)
-        time.sleep(2)
+        time.sleep(0.1)
 
 
 
