@@ -113,11 +113,10 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     cookie = xd["set-cookie"].split(";")[0]
 
     # checking now tag #federationtesautomated
-    r = br.open('https://%s/tags/federationtestautomated' % usr_host)
+    r = br.open('https://%s/tags/%s' % (usr_host, check_tag))
     #pd(r.info())
     stream = r.read()
 
-    r = br.open('https://%s/users/sign_out' % usr_host)
     if stream.find("%s" % check_text) > -1:
         print "[+] OK!! %s successfully found %s" % (user, check_text)
         dbx = "set autocommit=1; update test_results set status = '%s', checked = '1' where testid = '%s' and account = '%s'"% (check_status, testid, user)
@@ -128,6 +127,9 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
             dbx = "set autocommit=1; update test_results set status = '4', checked = '1'  where testid = '%s' and account = '%s'"% (testid, user)
         else:
             dbx = "set autocommit=1;"
+
+    r = br.open('https://%s/users/sign_out' % usr_host)
+
 
     pd(dbx)
     res = db_exec(dbx)
@@ -228,6 +230,39 @@ def exec_scheduler(ud):
     if res == ():
         print "[i] no checks found for execution"
 
+        dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time > '%s'  LIMIT 5;" % (now_time)
+    
+        ress = db_fetch(dbx)
+    
+        try:
+            int(res)
+            print "[-] ERROR [%s] while trying to get results for scheduler" % res
+            return(res)
+        except:
+            # we got result, even if emtpy
+            pass
+        print "[i] next 5 Tests: "
+        for st in ress:
+            testid = st[0]
+            ftwinit = st[1]
+            start_time = st[2]
+            init_time = st[3]
+            time_till_run = (int(start_time) - int(now_time)) / 60
+            start_date = time.strftime("%H:%M", time.localtime(float(start_time)))
+            init_date = time.strftime("%Y-%m-%d %H:%M", time.localtime(float(init_time)))
+            print """
+
+--[ %15s ]-------------------------------------------
+
+TestID      : %s
+StartAt     : %s 
+TimeLeft    : %s minutes
+Started     : %s 
+            
+            """ % (ftwinit, testid, start_date, time_till_run,  init_date)
+            
+            
+        
 
     for xt in res:
         print xt
@@ -262,7 +297,7 @@ def exec_scheduler(ud):
             except:
                 print "[-] ERROR ... cannot find pw for %s " % account
                 continue
-            find_text = "ftw.%s" % testid
+            find_text = "ftw.%s" % testid.strip()
             print "[i] checking login for %s " % account
             threads = []
             try:
@@ -380,7 +415,7 @@ timestamp: %s
 botlink: https://%s/u/%s
 
 
-#federationtestwarrior #federationtestautomated
+#federationtestwarriors #federationtestautomated
 
 
 
