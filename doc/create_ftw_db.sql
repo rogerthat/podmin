@@ -35,6 +35,7 @@ create table test_results (
     status int,
     checked int DEFAULT 0,
 
+
     PRIMARY KEY (id, testid),
     UNIQUE KEY id (id)
 
@@ -67,3 +68,9 @@ create table test_logins (
     UNIQUE KEY id (id, testid)
 
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+--- alter-statements after 0.2
+
+alter table test_results add checked_time int DEFAULT 0;
