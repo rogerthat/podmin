@@ -8,3 +8,4 @@ conf/*.list
 workshell.env
 test*
 
+Cache/*

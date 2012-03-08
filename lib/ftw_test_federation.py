@@ -22,7 +22,7 @@ class login_check_rc(unittest.TestCase):
 
         self.verificationErrors = []
         #pd("connecting %s " % self.host)
-        self.selenium = selenium("localhost", 4444, "*chrome", "https://%s/" % self.host)
+        self.selenium = selenium("localhost", 4444, "*firefox", "https://%s/" % self.host)
         self.selenium.start(self)
 
     def test_login_rc(self):

@@ -239,7 +239,7 @@ def list_schedules():
         ftwinit = st[1]
         start_time = st[2]
         init_time = st[3]
-        time_till_run = (int(start_time) - int(now_time)) / 60
+        time_till_run = ((int(start_time) - int(now_time)) / 60) + 1
         start_date = time.strftime("%H:%M", time.localtime(float(start_time)))
         init_date = time.strftime("%Y-%m-%d %H:%M", time.localtime(float(init_time)))
         print """
@@ -254,9 +254,25 @@ Time Left       : %s minutes
         """ % (ftwinit, testid, init_date, start_date, time_till_run,  )
 
 
-def init_db():
-    pass
+def db_init():
+    print "\n\n\n[!] DB-INIT \n\n\n"
+    tables = ["tests", "schedules", "test_results", "test_logins" ]
 
+    say_ok = raw_input("> type 'OK' if you really want to reset your test_db \n> ")
+    if say_ok != "OK":
+        print " ... nothign to do here"
+        return()
+    print """
+    """
+    for table in tables:
+        dbx = "set autocommit=1; delete from %s; " % table
+        res = db_exec(dbx)
+        if res == 0:
+            print " [+] purged table %s" % table
+        else:
+            print "[-] ERROR [ %s ] while purging table %s" % (res, table)
+
+    return()
 
 
 def exec_scheduler(ud):
@@ -299,8 +315,14 @@ def exec_scheduler(ud):
 
         cst = time.strftime("%F - %H:%M", time.localtime(float(start_time)))
         pd("starting scheduled test %s :: %s " % (cst, testid))
-        print "[i] starting check for %s " % testid
+        print "[i] starting check for %s :: %s " % (ftwinit, testid)
+        
+        ##debug
+        
+        dbx = "SELECT account from test_results where testid = '%s' and checked != '1'" % (testid)
+        
         dbx = "SELECT account from test_results where testid = '%s' and checked != '1' and account != '%s' " % (testid, ftwinit)
+#        dbx = "SELECT account from test_results where testid = '%s' and checked != '1' and account != '%s' " % (testid, ftwinit)
         res = db_fetch(dbx)
 
         try:
@@ -386,8 +408,7 @@ def get_ftw_user_dict():
 
 def check_selenium_rc():
 
-    # obsolete
-    return(0)
+    # obsolete NOT
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

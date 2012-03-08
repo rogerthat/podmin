@@ -49,3 +49,17 @@ Update-Info when you want to pull from git:
 
 
 
+
+
+2012-03-09 - v0.2 - FBI - FuckingBastardsInitiative
+    - rewrite apispora to use mechanize/json + login
+      for postings
+    - rewrite ftw to use mechanize for checks
+    - using users.list instead of
+
+
+2012-02-27 - v0.1 - CIA - ChickenIsAwesome
+
+    - ftw 0.1, using selenium
+    - initial release, branched out ftw
+
