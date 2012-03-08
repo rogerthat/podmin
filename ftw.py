@@ -164,7 +164,7 @@ if __name__ == "__main__":
         list_schedules()
 
     elif action == "init":
-        init_db()
+        db_init()
 
     elif action == "test-logins":
         testid = int(time.time())
@@ -222,7 +222,7 @@ FAILED: %s
 > generating results
         """
         dbx = "select login_ok, ok_bots, login_failed, failed_bots, testid from test_logins where testid > '%s' " % test_24h
-        res = db_fetch(dbx)
+        tres = db_fetch(dbx)
         try:
             int(res)
             print "[-] ERROR [%s] while trying to get results for report" % res
@@ -233,9 +233,10 @@ FAILED: %s
         ok_count = 0
         failed_count = 0
         total_count = 0
-        for res in tres:
-            ok = res[0]
-            failed = res[2]
+        for sres in tres:
+            print sres
+            ok = sres[0]
+            failed = sres[2]
             ok_count += int(ok)
             failed_count += int(failed)
         total_count = ok_count + failed_count
