@@ -60,7 +60,6 @@ ACTIONS
 
     -x init         -> cleanup db and delete all entries
 
-**  -x cleanup      -> closes unfinished tests > close_final_time
 
 **) not yet, kameraden, not yet!
 

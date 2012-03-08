@@ -44,12 +44,12 @@ class login_check_rc(unittest.TestCase):
         sel.wait_for_page_to_load("30000")
         sel.open("/tags/federationtestautomated")
         sel.wait_for_page_to_load("30000")
-        self.failUnless(sel.is_text_present("%s" % c))
-        #~ try: self.failUnless(sel.is_text_present("%s" % u))
-        #~ except AssertionError, e: self.verificationErrors.append(str(e))
+        try: 
+            self.failUnless(sel.is_text_present("%s" % c))
+        except AssertionError, e: 
+            self.verificationErrors.append(str(e))
+
         sel.open("/users/sign_out")
-#~ #        sel.click("link=%s@%s" % (user, host))
-#~ #        sel.click("link=Log out")
         sel.wait_for_page_to_load("30000")
 
     def tearDown(self):

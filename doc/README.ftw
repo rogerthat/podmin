@@ -43,7 +43,7 @@ selenium: http://seleniumhq.org/
 
 running selenium-server headless:
     - /usr/bin/Xvfb :99 -ac -screen 0 1024x768x8 &
-    - export DISPLAY=:99 && /usr/bin/java -jar lib/selenium-server.jar &
+    - export DISPLAY=:99 && /usr/bin/java -jar lib/selenium-server.jar -firefoxProfileTemplate lib/ffprofile &
 
 
 see stuff/selenium-rc-startscript.sh

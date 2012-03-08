@@ -1,5 +1,9 @@
 TODO
 
+all
+    changelog into readme
+    
+
 api
     -t [api-type] generic, pistos
     -v [api-version]
@@ -9,11 +13,12 @@ api
     
 ftw
 
-    - thread to keep mysql-connection open?
     - log every bot-login-values, not just summary incl. time etc
     - statuscollector for graphs on login-time
-    
+    - testid 6 chars xxx.yyy.
+    - on scheduler -> cleanup()
     result 
+        
         - -o output_dir html/txt
         - 24hrs/48hrs/7days/31days
         - total time / avg_time for login

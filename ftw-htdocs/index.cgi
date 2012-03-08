@@ -32,12 +32,7 @@ print "Content-Type: text/html \r\n\r\n"
 
 
 
-bg_ok = "#BDFFBD"
-bg_susp = "#FFED96"
-bg_spam = "#FFB751"
-bg_rep = "magenta"
-bg_mal = "#FF7C8C"
-bg_unk = "#C4E4E2"
+
 
 header = """
 <html>
@@ -137,13 +132,24 @@ def main():
                     account = mr[0]
                     status = mr[1]
                     checked_time = mr[2]
+                    bg = "white"
+                    if status == "1":
+                        bg = "green"
+                    elif status == "2":
+                        bg = "#FFED96"
+                    elif status == "3":
+                        bg = "#FF7C8C"
+                    elif status == "4":
+                        bg = "red"
+                    else:
+                        bg = "#C4E4E2"
                     if int(checked_time) == 0:
                         checked_date = "..."
                     else:
                         checked_date =  time.strftime("%Y-%m-%d %H:%M", time.localtime(float(checked_time)))
                     print """
-                    <tr><td>%s</td><td>%s</td><td>%s</td></tr>
-                    """ % (account, status, checked_date)
+                    <tr><td>%s</td><td bgcolor='%s'>%s</td><td>%s</td></tr>
+                    """ % (account, bg, status, checked_date)
 
                 dbx = "SELECT account, status, checked_time from test_results  where testid = '%s' and checked = '0' order by  id;" % (skey)
 

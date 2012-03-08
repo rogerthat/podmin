@@ -1,7 +1,7 @@
 #
 # functions for ftw
 #
-# v0.1.44
+# v0.1.48
 #
 #
 
@@ -136,10 +136,10 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     dbx = "set autocommit=1;"
 
     tres = ftw_check(usr_name, usr_host, pw, check_text)
-
+    check_txt = check_text[0:10]
     if tres == 0:
 
-        print "[+] OK!! %s successfully found %s" % (user, check_text)
+        print "[+] OK!! %s successfully found %s" % (user, check_txt)
         dbx = "set autocommit=1; update test_results set status = '%s', checked = '1', checked_time = '%s' where testid = '%s' and account = '%s'"% (check_status, nt, testid, user)
     else:
         #
@@ -222,6 +222,46 @@ def db_fetch(dbx):
 def list_schedules():
 
     now_time = int(time.time())
+
+    outdated = now_time - (24*60*60)
+
+    now_time = int(time.time())
+    dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time > '%s' and schedules.start_time < '%s'  order by schedules.start_time;" % (outdated, now_time)
+
+    ress = db_fetch(dbx)
+    try:
+        int(res)
+        print "[-] ERROR [%s] while trying to get results for scheduler" % res
+        return(res)
+    except:
+        # we got result, even if emtpy
+        pass
+    print """
+> due_time reached ( %s tests found) 
+    """ % len(ress)
+    for st in ress:
+        testid = st[0]
+        ftwinit = st[1]
+        start_time = st[2]
+        init_time = st[3]
+        time_till_run = ((int(start_time) - int(now_time)) / 60) + 1
+        start_date = time.strftime("%H:%M", time.localtime(float(start_time)))
+        init_date = time.strftime("%Y-%m-%d %H:%M", time.localtime(float(init_time)))
+        print """
+--[ %15s ]-------------------------------------------
+
+TestID          : %s
+Test Started    : %s
+Due_Time        : %s
+Overdue         : %s minutes
+        """ % (ftwinit, testid, init_date, start_date, time_till_run,  )
+
+
+
+    print """
+> upcoming events
+    """
+
     dbx = "SELECT tests.testid, tests.ftwinit, schedules.start_time, tests.init_time from tests,schedules where tests.testid = schedules.testid and schedules.status = '0' and schedules.start_time > '%s' order by schedules.start_time LIMIT 5;" % (now_time)
 
     ress = db_fetch(dbx)
@@ -243,14 +283,12 @@ def list_schedules():
         start_date = time.strftime("%H:%M", time.localtime(float(start_time)))
         init_date = time.strftime("%Y-%m-%d %H:%M", time.localtime(float(init_time)))
         print """
-
 --[ %15s ]-------------------------------------------
 
 TestID          : %s
 Test Started    : %s
 Next Run        : %s
 Time Left       : %s minutes
-
         """ % (ftwinit, testid, init_date, start_date, time_till_run,  )
 
 
@@ -309,13 +347,15 @@ def exec_scheduler(ud):
 
     for xt in res:
         testid = xt[0]
+        testid_txt = testid[0:6]
         ftwinit = xt[1]
         start_time = xt[2]
         init_time = xt[3]
 
         cst = time.strftime("%F - %H:%M", time.localtime(float(start_time)))
-        pd("starting scheduled test %s :: %s " % (cst, testid))
-        print "[i] starting check for %s :: %s " % (ftwinit, testid)
+        pd("starting scheduled test %s :: %s " % (cst, testid_txt))
+        print "[i] starting check for %s :: %s \n    init_date: %s" % (ftwinit, testid_txt, time.strftime("%H:%M", time.localtime(float(init_time)))
+)
         
         ##debug
         
@@ -381,7 +421,7 @@ def exec_scheduler(ud):
             print "[-] ERROR [ %s ] while trying to update scheduler-table" % res
             pd(dbx)
         else:
-            print "[+] run finished %s :: %s " % (ftwinit, testid)
+            print "[+] run finished %s :: %s " % (ftwinit, testid_txt)
         time.sleep(0.1)
 
 
