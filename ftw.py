@@ -25,6 +25,7 @@ from ftw_func import *
 api = api_exec
 
 debug = "yes"
+daemon = "no"   # see -D
 
 
 now_time = int(time.time())
@@ -60,6 +61,10 @@ ACTIONS
 
     -x init         -> cleanup db and delete all entries
 
+
+    -D              -> daemon_mode, will run contiuously 
+                       works only on -x scheduler 
+                       **
 
 **) not yet, kameraden, not yet!
 
@@ -101,7 +106,7 @@ if __name__ == "__main__":
     action = 0
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hdx:r:")
+        opts, args = getopt.getopt(sys.argv[1:], "Dhdx:r:")
     except getopt.GetoptError, err:
         # print help information and exit:
         print " > ERROR on ftw / wrong option "
@@ -116,6 +121,8 @@ if __name__ == "__main__":
             action = "%s" % a.strip()
         elif o == "-d":
             debug = "yes"
+        elif o == "-D":
+            daemon = "yes"
         else:
 
             print help_text
@@ -157,7 +164,13 @@ if __name__ == "__main__":
         # debug only
 
     elif action == "scheduler":
-        exec_scheduler(ud)
+        if daemon == "yes":
+            while 1:
+                print "[i] running scheduler in daemon_mode"
+                exec_scheduler(ud)
+                time.sleep(10)
+        else:
+            exec_scheduler(ud)
 
     elif action == "list":
         list_schedules()

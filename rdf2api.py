@@ -195,7 +195,9 @@ for r in res:
     if debug == "yes":
         dswitch = "-d"
 
-    i = sub.call("""%s %s  -x post -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'")), shell=True)
+    call = """%s %s  -x post -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'"))
+    print call
+    i = sub.call(call, shell=True)
 
 
 
@@ -208,7 +210,7 @@ for r in res:
         print "[-] ERROR [ %s :: %s ]  \n\n\n" % (i, idx)
         time.sleep(2)
     # otherwise -> 503
-    time.sleep(5)
+    time.sleep(0.3)
 
 
 
