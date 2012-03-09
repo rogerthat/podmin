@@ -5,7 +5,7 @@
 # api, right now only working with pistosapi
 #
 
-this_version= " v0.1.99.14 alpha - rc1"
+this_version= " v0.2.0.44 alpha"
 
 #
 #

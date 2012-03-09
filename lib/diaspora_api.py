@@ -1,7 +1,7 @@
 #
 # functions for diaspora_api
 #
-# v0.1.99.22 rc1
+# v0.2.0.22 rc1
 #
 #
 

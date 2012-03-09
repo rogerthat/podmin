@@ -33,16 +33,6 @@ def mysql_keepalive():
 def start_check(user, pw, check_text, testid, start_time, init_time):
     # i know. it's bad style ... but i'm not the threading_global_var_nerd ...
 
-    nt = int(time.time())
-    wt = (int(init_time) + (60*int(warning_time)))
-    ct = (int(init_time) + (60*int(critical_time)))
-
-
-    check_status = 1
-    if nt > ct:
-        check_status = 3
-    elif nt > wt:
-        check_status = 2
 
     usr_name = user.split("@")[0].strip()
     usr_host = user.split("@")[1].strip()
@@ -51,9 +41,6 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
         return(1000)
 
 
-    nt = int(time.time())
-    wt = (int(init_time) + (60*int(warning_time)))
-    ct = (int(init_time) + (60*int(critical_time)))
 
     # looks like mechanize doesnt werk with displaying the stream???
     # well, maybe with ios UA?
@@ -96,20 +83,14 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
         print 'We failed to reach a server.'
         print 'Reason: ', e.reason
         return(404)
-#~ #~
-#~ #~
     html = r.read()
-#~ #~
     pd(r.info())
-#~ #~
     csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
     pd("csrf PURE    : %s" % csrf)
     h =  HTMLParser.HTMLParser()
     csrftoken = h.unescape(csrf)
     pd("csrf eascaped: %s" % csrftoken)
     # Show the response headers
-#~ #~
-#~ #~
     # login
     br.select_form(nr=0)
     # Let's search
@@ -117,14 +98,11 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     br.form['user[password]']='%s' % pw
     br.submit()
     xd = br.response().info()
-#~ #~
     # diaspora_cookie
     cookie = xd["set-cookie"].split(";")[0]
-#~ #~
     # checking now tag #federationtesautomated
     r = br.open('https://%s/%s' % (usr_host, check_tag))
-    #~ #pd(r.info())
-#~ 
+    pd(r.info())
     stream = r.read(100000)
 
     ## debug only
@@ -145,6 +123,18 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     dbx = "set autocommit=1;"
 
 
+    nt = int(time.time())
+    wt = (int(init_time) + (60*int(warning_time)))
+    ct = (int(init_time) + (60*int(critical_time)))
+
+
+    check_status = 1
+    if nt > ct:
+        check_status = 3
+    elif nt > wt:
+        check_status = 2
+
+
     # selenium -> obsolete again?
     #tres = ftw_check(usr_name, usr_host, pw, check_text)
 
@@ -152,12 +142,12 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     if tres == 0:
 
         print "[+] OK!! %s successfully found %s" % (user, check_txt)
-        dbx = "set autocommit=1; update test_results set status = '%s', checked = '1', checked_time = '%s' where testid = '%s' and account = '%s'"% (check_status, nt, testid, user)
+        dbx = "set autocommit=1; update test_results set status = '%s', checked = '1', checked_time = '%s' where testid = '%s' and account = '%s';"% (check_status, nt, testid, user)
     else:
         #
         outdated_ts = int(schedule_time_steps.split(",")[-1])
         if nt > (int(init_time) + (outdated_ts*60)):
-            dbx = "set autocommit=1; update test_results set status = '4', checked = '1'  where testid = '%s' and account = '%s'"% (testid, user)
+            dbx = "set autocommit=1; update test_results set status = '4', checked = '1'  where testid = '%s' and account = '%s'; "% (testid, user)
 
 
     pd(dbx)
@@ -345,6 +335,7 @@ def exec_scheduler(ud):
     res = db_fetch(dbx)
 
     try:
+        
         int(res)
         print "[-] ERROR [%s] while trying to get results for scheduler" % res
         return(res)
@@ -372,7 +363,7 @@ def exec_scheduler(ud):
 )
         
                 
-        dbx = "SELECT account from test_results where testid = '%s' and ( checked != '1' or checked != '5')  and account != '%s' " % (testid, ftwinit)
+        dbx = "SELECT account from test_results where testid = '%s' and checked != '1'  and account != '%s' " % (testid, ftwinit)
 #        dbx = "SELECT account from test_results where testid = '%s' and checked != '1' and account != '%s' " % (testid, ftwinit)
         res = db_fetch(dbx)
 
@@ -458,8 +449,8 @@ def get_ftw_user_dict():
 
 def check_selenium_rc():
 
-    # obsolete NOT
-
+    # obsolete AGAIN ... was: NOT
+    return(0)
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((selenium_server, int(selenium_port)))
