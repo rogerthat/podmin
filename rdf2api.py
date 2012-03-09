@@ -167,10 +167,14 @@ for r in res:
         desc = "nono"
     rdf_provider = r[4]
     if rdf_provider == "xkcd":
+        print desc
         dx = desc.split("src=")[1]
         dx = dx.split(" ")[0].replace("\"", " ").strip()
-        desc = """\n\n![XKCD](%s) \n\n""" % dx.replace("'", "")
-        #print "DESC: %s " % desc
+        alt = desc.split("alt=")[1]
+        alt = alt.split("'")[1].replace("\"", " ").strip()
+        desc = """\n\n![XKCD](%s "%s") \n\n""" % (dx.replace("'", ""), alt.replace("'", ""))
+
+        print "DESC: %s " % desc
     msg = """### [%s](%s)
 ---------------------------------
 
