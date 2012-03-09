@@ -26,7 +26,7 @@ create table schedules (
 
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- status: 0 -> UNKNOWN, 1-> seen-OK; 2 -> seen.WARNING; 3 -> seen.CRITICAL; 4 -> not seen
+-- status: 0 -> UNKNOWN, 1-> seen-OK; 2 -> seen.WARNING; 3 -> seen.CRITICAL; 4 -> not seen; 5 -> dinc-code, cant render 
 drop table if exists test_results;
 create table test_results (
     id int(11) NOT NULL AUTO_INCREMENT,

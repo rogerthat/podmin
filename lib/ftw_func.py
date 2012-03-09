@@ -55,87 +55,99 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     wt = (int(init_time) + (60*int(warning_time)))
     ct = (int(init_time) + (60*int(critical_time)))
 
-    # looks like mechanize dioesnt werk with displaying the stream???
-    #~ # starting to post -> using login/json via mechanize
-    #~ br = mechanize.Browser()
-#~
-    #~ # Cookie Jar
-    #~ cj = cookielib.LWPCookieJar()
-    #~ br.set_cookiejar(cj)
-#~
-    #~ # Browser options
-    #~ br.set_handle_equiv(True)
-    #~ br.set_handle_gzip(False)
-    #~ br.set_handle_redirect(True)
-    #~ br.set_handle_referer(False)
-    #~ br.set_handle_robots(False)
-#~
-    #~ # Follows refresh 0 but not hangs on refresh > 0
-    #~ br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-#~
-    #~ # Want debugging messages?
-    #~ if debug == "yes":
-        #~ br.set_debug_http(True)
-        #~ br.set_debug_redirects(True)
-        #~ br.set_debug_responses(True)
-#~
-    #~ # User-Agent (this is cheating, ok?)
-    #~ br.addheaders = [('Connection', 'keep-alive'), ('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-#~
-#~
-    #~ # Open some site, let's pick a random one, the first that pops in mind:
-    #~ try:
-        #~ r = br.open('https://%s/users/sign_in' % usr_host, timeout=10)
-    #~ except mechanize.HTTPError, e:
-        #~ print 'ERROR! The server couldn\'t fulfill the request.'
-        #~ print 'Error code: ', e.code
-        #~ return(e.code)
-    #~ except mechanize.URLError, e:
-        #~ print 'We failed to reach a server.'
-        #~ print 'Reason: ', e.reason
-        #~ return(404)
-#~
-#~
-    #~ html = r.read()
-#~
-    #~ pd(r.info())
-#~
-    #~ csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
-    #~ pd("csrf PURE    : %s" % csrf)
-    #~ h =  HTMLParser.HTMLParser()
-    #~ csrftoken = h.unescape(csrf)
-    #~ pd("csrf eascaped: %s" % csrftoken)
-    #~ # Show the response headers
-#~
-#~
-    #~ # login
-    #~ br.select_form(nr=0)
-    #~ # Let's search
-    #~ br.form['user[username]']='%s' % usr_name
-    #~ br.form['user[password]']='%s' % pw
-    #~ br.submit()
-    #~ xd = br.response().info()
-#~
-    #~ # diaspora_cookie
-    #~ cookie = xd["set-cookie"].split(";")[0]
-#~
-    #~ # checking now tag #federationtesautomated
-    #~ r = br.open('https://%s/%s' % (usr_host, check_tag))
-    #pd(r.info())
+    # looks like mechanize doesnt werk with displaying the stream???
+    # well, maybe with ios UA?
+    # https://c0unt.org/posts/8891
+    ua = 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7'
+    #~ # 
+    br = mechanize.Browser()
+#~ #~
+    # Cookie Jar
+    cj = cookielib.LWPCookieJar()
+    br.set_cookiejar(cj)
+#~ #~
+    # Browser options
+    br.set_handle_equiv(True)
+    br.set_handle_gzip(False)
+    br.set_handle_redirect(True)
+    br.set_handle_referer(False)
+    br.set_handle_robots(False)
+#~ #~
+    # Follows refresh 0 but not hangs on refresh > 0
+    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+#~ #~
+    # Want debugging messages?
+    if debug == "yes":
+        br.set_debug_http(True)
+        br.set_debug_redirects(True)
+        br.set_debug_responses(True)
+#~ #~
+    # User-Agent (this is cheating, ok?)
+    br.addheaders = [('Connection', 'keep-alive'), ('User-agent', ua)  ]
+#~ #~
+#~ #~
+    try:
+        r = br.open("https://%s/users/sign_in" % usr_host, timeout=15)
+    except mechanize.HTTPError, e:
+        print 'ERROR! The server couldn\'t fulfill the request.'
+        print 'Error code: ', e.code
+        return(e.code)
+    except mechanize.URLError, e:
+        print 'We failed to reach a server.'
+        print 'Reason: ', e.reason
+        return(404)
+#~ #~
+#~ #~
+    html = r.read()
+#~ #~
+    pd(r.info())
+#~ #~
+    csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
+    pd("csrf PURE    : %s" % csrf)
+    h =  HTMLParser.HTMLParser()
+    csrftoken = h.unescape(csrf)
+    pd("csrf eascaped: %s" % csrftoken)
+    # Show the response headers
+#~ #~
+#~ #~
+    # login
+    br.select_form(nr=0)
+    # Let's search
+    br.form['user[username]']='%s' % usr_name
+    br.form['user[password]']='%s' % pw
+    br.submit()
+    xd = br.response().info()
+#~ #~
+    # diaspora_cookie
+    cookie = xd["set-cookie"].split(";")[0]
+#~ #~
+    # checking now tag #federationtesautomated
+    r = br.open('https://%s/%s' % (usr_host, check_tag))
+    #~ #pd(r.info())
+#~ 
+    stream = r.read(100000)
 
-    #~ ## debug only
-    #~ stream = r.read(100000)
+    ## debug only
     #~ print stream
     #~ raw_input("> %s should find: %s \n> [enter] ::" % (user, testid))
-    #~
-    #~ ##
-    #~
+    
+    
+    tres = 1
+    if stream.find(check_text) > -1:
+        tres = 0
+    r.close()
+    #~ #~
+    ##
+    #~ #~
 
 
     # making some default
     dbx = "set autocommit=1;"
 
-    tres = ftw_check(usr_name, usr_host, pw, check_text)
+
+    # selenium -> obsolete again?
+    #tres = ftw_check(usr_name, usr_host, pw, check_text)
+
     check_txt = check_text[0:10]
     if tres == 0:
 
@@ -359,11 +371,8 @@ def exec_scheduler(ud):
         print "[i] starting check for %s :: %s \n    init_date: %s" % (ftwinit, testid_txt, time.strftime("%H:%M", time.localtime(float(init_time)))
 )
         
-        ##debug
-        
-        dbx = "SELECT account from test_results where testid = '%s' and checked != '1'" % (testid)
-        
-        dbx = "SELECT account from test_results where testid = '%s' and checked != '1' and account != '%s' " % (testid, ftwinit)
+                
+        dbx = "SELECT account from test_results where testid = '%s' and ( checked != '1' or checked != '5')  and account != '%s' " % (testid, ftwinit)
 #        dbx = "SELECT account from test_results where testid = '%s' and checked != '1' and account != '%s' " % (testid, ftwinit)
         res = db_fetch(dbx)
 
@@ -389,10 +398,9 @@ def exec_scheduler(ud):
                 continue
             threads = []
 
-            find_text = "ftw.%s" % testid[0:12].strip()
+            find_text = "%s" % testid[0:12].strip()
             print "[i] checking #ftw [ %s ] for %s " % (find_text, account)
-            ##debug
-            #find_text = "ftw"
+            start_check(account, pw, find_text, testid, start_time, init_time)
             try:
                 t = threading.Thread(target=start_check, args=(account, pw, find_text, testid, start_time, init_time))
                 threads.append(t)

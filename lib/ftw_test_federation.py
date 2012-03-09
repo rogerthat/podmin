@@ -44,11 +44,13 @@ class login_check_rc(unittest.TestCase):
         sel.wait_for_page_to_load("30000")
         sel.open("/tags/federationtestautomated")
         sel.wait_for_page_to_load("30000")
-        try: 
-            self.failUnless(sel.is_text_present("%s" % c))
+        try:   
+            self.failUnless(sel.is_text_present(c))
+            print "[+] !!!!!!!!!!!! found %s " % c
         except AssertionError, e: 
+            print "[-] Error on %s " % c
             self.verificationErrors.append(str(e))
-
+        time.sleep(30)
         sel.open("/users/sign_out")
         sel.wait_for_page_to_load("30000")
 
