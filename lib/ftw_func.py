@@ -241,6 +241,7 @@ def list_schedules():
     """ % len(ress)
     for st in ress:
         testid = st[0]
+        testid =  testid[0:6]
         ftwinit = st[1]
         start_time = st[2]
         init_time = st[3]
@@ -276,6 +277,7 @@ Overdue         : %s minutes
     print "[i] next 5 Tests: "
     for st in ress:
         testid = st[0]
+        testid =  testid[0:6]
         ftwinit = st[1]
         start_time = st[2]
         init_time = st[3]
@@ -385,10 +387,10 @@ def exec_scheduler(ud):
             except:
                 print "[-] ERROR ... cannot find pw for %s " % account
                 continue
-            print "[i] checking #ftw for %s " % account
             threads = []
 
-            find_text = "ftw.%s" % testid.strip()
+            find_text = "ftw.%s" % testid[0:12].strip()
+            print "[i] checking #ftw [ %s ] for %s " % (find_text, account)
             ##debug
             #find_text = "ftw"
             try:
