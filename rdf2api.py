@@ -7,9 +7,9 @@
 # public available
 #
 
-this_version = "0.1.24"
+this_version = "0.1.26"
 
-import MySQLdb, time, os, sys, getopt
+import MySQLdb, time, os, sys, getopt, nltk
 import subprocess as sub
 
 
@@ -174,11 +174,13 @@ for r in res:
         alt = alt.split("'")[1].replace("\"", " ").strip()
         desc = """\n\n![XKCD](%s "%s") \n\n""" % (dx.replace("'", ""), alt.replace("'", ""))
 
-        print "DESC: %s " % desc
+        #print "DESC: %s " % desc
+        
+    elif rdf_provider == "lifehacker":
+        desc = nltk.clean_html(desc)
     msg = """### [%s](%s)
 ---------------------------------
 
-**Stream  : %s**
 **Link    : %s**
 
 ---------------------------------
@@ -187,20 +189,22 @@ for r in res:
 
 ---------------------------------
 
-%s :: %s
 
-#botpost #pistosapibot #%s """ % (title, link, rdf_provider, link, desc,  ts, idx, rdf_provider)
+#botpost #%s 
+
+
+""" % (title, link, rdf_provider, link, desc.replace("*", ""),  rdf_provider)
     #print exe
     dswitch = ""
     if debug == "yes":
         dswitch = "-d"
 
     call = """%s %s  -x post -u %s -t  "%s" """ % (api, dswitch, bot, msg.replace("\"", "'"))
-    print call
+    #print call
     i = sub.call(call, shell=True)
 
 
-
+    
     if i == 0:
         cx = conn2.cursor()
         set_seen = "BEGIN; update rdf_entries set diabot_seen = '1' where id = '%s';  COMMIT;" % idx
