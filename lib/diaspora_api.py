@@ -1,7 +1,7 @@
 #
 # functions for diaspora_api
 #
-# v0.2.0.22 rc1
+# v0.2.0.24 rc1
 #
 #
 
@@ -327,10 +327,10 @@ def api_post(user, pw, msg, aspect_ids=['public']):
     pd("%s ::: %s" % ( st, re))
 
 
-    # why is it redirected to /aspects?
+    # why is it redirected to /aspects or /?
     if st != 302:
-        print "[-] ]ERROR - status-code (shall be 302): %s" % st
-
+        print "[-] ERROR - status-code (shall be 302): %s" % st
+        return(st)
     rloc =  response.getheader('location')
     if rloc.find("/users/sign_in") > -1:
         print "[-] ERROR - redirect_location (shall be / or /aspects): %s" % rloc

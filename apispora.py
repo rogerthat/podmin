@@ -5,7 +5,7 @@
 # api, right now only working with pistosapi
 #
 
-this_version= " v0.2.0.44 alpha"
+this_version= " v0.2.0.46 alpha"
 
 #
 #
@@ -116,49 +116,51 @@ action = "test"
 uexec = ""
 aspect_ids = ['public']
 
-try:
-    opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:a:f:")
-except getopt.GetoptError, err:
-    # print help information and exit:
-    print " > ERROR on api / wrong option "
-    print str(err) # will print something like "option -a not recognized"
-    api_help()
 
-    sys.exit(2)
-
-for o, a in opts:
-
-    if o == "-u":
-        usr_get = "%s" % a.strip()
-
-    elif o == "-t":
-        try:
-            txt = """
-""".join(a.split("\\n"))
-        except:
-            txt = "%s" % a.strip()
-    elif o == "-f":
-        users_file = "%s" % a
-
-
-    elif o == "-a":
-        aspect_ids = ['%s'] % a
-
-    elif o == "-x":
-        action = "%s" % a.strip()
-
-
-    elif o == "-d":
-        debug = "yes"
-
-    elif o == "-l":
-        uexec = "list"
-    else:
-        api_help()
-        sys.exit()
 
 
 if __name__ == "__main__":
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:a:f:")
+    except getopt.GetoptError, err:
+        # print help information and exit:
+        print " > ERROR on api / wrong option "
+        print str(err) # will print something like "option -a not recognized"
+        api_help()
+    
+        sys.exit(2)
+    
+    for o, a in opts:
+    
+        if o == "-u":
+            usr_get = "%s" % a.strip()
+    
+        elif o == "-t":
+            try:
+                txt = """
+    """.join(a.split("\\n"))
+            except:
+                txt = "%s" % a.strip()
+        elif o == "-f":
+            users_file = "%s" % a
+    
+    
+        elif o == "-a":
+            aspect_ids = ['%s'] % a
+    
+        elif o == "-x":
+            action = "%s" % a.strip()
+    
+    
+        elif o == "-d":
+            debug = "yes"
+    
+        elif o == "-l":
+            uexec = "list"
+        else:
+            api_help()
+            sys.exit()
 
     if len(sys.argv) < 2:
         api_help()

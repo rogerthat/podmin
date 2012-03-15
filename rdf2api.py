@@ -7,7 +7,7 @@
 # public available
 #
 
-this_version = "0.1.26"
+this_version = "0.1.28"
 
 import MySQLdb, time, os, sys, getopt, nltk
 import subprocess as sub
@@ -166,6 +166,11 @@ for r in res:
     if desc == title:
         desc = "nono"
     rdf_provider = r[4]
+
+    add_tag = "#botpost #%s" % rdf_provider
+
+
+    # cleaning up / reworking post-msg
     if rdf_provider == "xkcd":
         print desc
         dx = desc.split("src=")[1]
@@ -176,24 +181,48 @@ for r in res:
 
         #print "DESC: %s " % desc
         
-    elif rdf_provider == "lifehacker":
+    elif rdf_provider in ('lifehacker', 'mbn'):
         desc = nltk.clean_html(desc)
+
+
+    # create additional hashtags
+    if rdf_provider == 'mbn':
+        add_tag = "%s #mobilebroadcastnews" % add_tag
+    
+
+    elif rdf_provider == 'cas-edu':
+        add_tag = "%s #education #computer #acm" % add_tag
+
+    elif rdf_provider == 'cas-cas':
+        add_tag = "%s #education #computer #society #acm" % add_tag
+
+    elif rdf_provider == 'debianwn':
+        add_tag = "%s #debian #debianweeklynews" % add_tag
+
+
+    elif rdf_provider in ('veganch', 'albertschweizerstiftung'):
+        add_tag = "%s #veganer #vegan " % add_tag
+    
+    if bot =="spambot@c0unt.org":
+        add_tag = "#spambot"
+
+    
     msg = """### [%s](%s)
 ---------------------------------
 
-**Link    : %s**
-
----------------------------------
 
 %s
 
 ---------------------------------
 
+**Link : %s**
 
-#botpost #%s 
 
 
-""" % (title, link, rdf_provider, link, desc.replace("*", ""),  rdf_provider)
+%s
+
+
+""" % (title, link,  desc.replace("*", ""), link, add_tag)
     #print exe
     dswitch = ""
     if debug == "yes":

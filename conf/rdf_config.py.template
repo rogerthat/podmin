@@ -10,3 +10,7 @@ db_pass = "xxx"
 db_db   = "rdf_master"
 
 
+
+# if you have a testbot you dont want to hat #botpost as tag
+# included, right?
+spambot="spambot@yourpod.org"
