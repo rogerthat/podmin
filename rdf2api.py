@@ -250,9 +250,3 @@ for r in res:
 c2.close()
 
 
-print """
-
-
-... exiting
-
-"""
