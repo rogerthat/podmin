@@ -85,7 +85,13 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
         return(404)
     html = r.read()
     pd(r.info())
-    csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
+    
+    # thanx, d*inc for breaking this again ... 
+    try:
+        csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
+    except:
+        csrf = html.split("""name="csrf-token""")[0].split("\"")[0]
+
     pd("csrf PURE    : %s" % csrf)
     h =  HTMLParser.HTMLParser()
     csrftoken = h.unescape(csrf)
@@ -99,9 +105,16 @@ def start_check(user, pw, check_text, testid, start_time, init_time):
     br.submit()
     xd = br.response().info()
     # diaspora_cookie
-    cookie = xd["set-cookie"].split(";")[0]
+    try:
+        cookie = xd["set-cookie"].split(";")[0]
+    except:
+        print "no cookie no cry"
+        print xd
     # checking now tag #federationtesautomated
-    r = br.open('https://%s/%s' % (usr_host, check_tag))
+    try:
+        r = br.open('https://%s/%s' % (usr_host, check_tag))
+    except:
+        return(405)
     pd(r.info())
     stream = r.read(100000)
 
