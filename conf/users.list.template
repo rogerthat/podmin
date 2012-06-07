@@ -3,4 +3,5 @@
 #
 #
 # syntax:
-# user@pod.org :: account-pw :: pistos-api-key (leave emtpy, if not known)
+# user@tree :: account-pw :: api-key (leave emtpy, if not known)
+

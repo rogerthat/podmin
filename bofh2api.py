@@ -4,7 +4,7 @@
 #
 #
 
-this_version = "v1.0.1 build.666 2011-02-31 "
+this_version = "v1.0.2 build.666 2011-05-31 "
 
 
 import getpass, poplib, sys, time, socket, getopt
@@ -22,7 +22,7 @@ debug = "no"
 
 user = ""
 podmin_root_dir = "."
-apispora = "%s/apispora.py" % podmin_root_dir
+api = "%s/treehouse.py" % podmin_root_dir
 
 
 
@@ -33,10 +33,10 @@ BOFH2API  - a small interface to %s
             version: %s
 
 USAGE:
-    email2api.py -u [usr@pod.org]
+    bofh2api.py -u [usr@tree]
                     receive mails and post to user-account 
     
-    email2api.py -l -> list available users (shortcut to 
+    bofh2api.py -l -> list available users (shortcut to 
                     %s -l
     
     
@@ -44,7 +44,7 @@ OPTIONS:
         -d          -> debug ON
                        default: %s
 
-""" % (apispora, this_version, apispora, debug)
+""" % (api, this_version, api, debug)
 
 
 i_time = int(time.time())
@@ -68,7 +68,7 @@ for o, a in opts:
         user = "%s" % a.strip()
     
     elif o == "-l":
-        sub.call("%s -l" % apispora, shell=True)
+        sub.call("%s -l" % api, shell=True)
         sys.exit()
     
 
@@ -85,7 +85,7 @@ for o, a in opts:
 if len(user) < 4:
     print """
 
-[-] ERROR ... no user given; use -u usr@pod.org
+[-] ERROR ... no user given; use -u usr@tree.house
               check with -l
 
 -----------------------------------------------------
@@ -96,20 +96,16 @@ if len(user) < 4:
 
 
 excuse = bofh_excuse()
-msg = """
+msg = """%s 
+---------------------------------------
 
 
-###  %s 
-
-
-
-#bofh #apipost
-
+#bofh #botpost
 
 
 """ % excuse
 
-xe = """%s -x post -u %s -t "%s" """ % (apispora, user, msg)
+xe = """%s -x post -u %s -t "%s" """ % (api, user, msg)
 #print xe
 
 

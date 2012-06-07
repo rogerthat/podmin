@@ -7,7 +7,7 @@
 # public available
 #
 
-this_version = "0.1.28"
+this_version = "0.3.30"
 
 import MySQLdb, time, os, sys, getopt, nltk
 import subprocess as sub
@@ -19,7 +19,7 @@ sys.path.append("lib")
 #from diaspora_api import *
 from rdf_config import *
 
-api = "./apispora.py"
+api = "./treepee.py"
 bot = ""
 action = "no"
 providers = ["all"]
@@ -28,7 +28,7 @@ debug = "no"
 
 helP = """
 
-rdf2api.py -> post news from rdf_collector to diaspora
+rdf2api.py -> post news from rdf_collector to libertree
 
 options:
     -l list available rdf-providers
@@ -207,22 +207,21 @@ for r in res:
         add_tag = "#spambot"
 
     
-    msg = """### [%s](%s)
----------------------------------
+    msg = """**[[%s] %s](%s)**
 
 
 %s
 
 ---------------------------------
 
-**Link : %s**
+**[Link](%s)**
 
 
 
 %s
 
 
-""" % (title, link,  desc.replace("*", ""), link, add_tag)
+""" % (rdf_provider, title, link,  desc.replace("*", ""), link, add_tag)
     #print exe
     dswitch = ""
     if debug == "yes":
@@ -243,6 +242,7 @@ for r in res:
         print "[-] ERROR [ %s :: %s ]  \n\n\n" % (i, idx)
         time.sleep(2)
     # otherwise -> 503
+    break
     time.sleep(0.3)
 
 

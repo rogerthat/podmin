@@ -1,11 +1,11 @@
 #!/usr/bin/python
 #
 #
-# apispora - a little script to post to diaspora using an
-# api, right now only working with pistosapi
+# treepee - a little script to post to libertree using the api-endpoints
+# see https://github.com/Libertree/libertree-frontend-ramaze/wiki/Member-API
 #
 
-this_version= " v0.2.0.46 alpha"
+this_version= " v0.3.0.48 alpha"
 
 #
 #
@@ -23,21 +23,21 @@ import users, HTMLParser
 from pywebfinger import finger
 
 global debug
-debug = "no"
+debug = "yes"
 
-pistos_api_version="0" # for /fapi/v0/posts.json
+api_version="1" # for /fapi/v0/posts.json
 
 date = time.strftime("%Y-%m-%d - %H:%M", time.localtime(time.time()))
 
-default_txt = "testmessage\n-------------------------\n\napispora-test :: %s \n\n \n\n #federationtestautomated #pistosapi " % date
+default_txt = "testmessage\n-------------------------\n\ntreepee-test :: %s \n\n \n\n #testautomated #libertreeapi " % date
 users_file = "users.list"
 
 def api_help():
 
     print """
 
-APISPORA - some tools to test diaspora-ccounts or to post to
-           diaspora-accounts via api-emulation
+TREEPEE - some tools to test libertree-accounts or to post to
+          libertree-accounts via api
 
 ATENCION! ** marked options/actions are **VERY** experimental
             and shall not be used
@@ -47,39 +47,25 @@ USAGE
 
 ACTIONS:
 
-    -x test     -> test a useraccount
+    -x test *** -> test a useraccount
                    default-action; used if none given
                    needs -u
                    test if account is available and delivers webfinger /
                    hcard-results; if a pistos-api-key is available checks
                    for new notifications and lists aspect_ids
 
-    -x post     -> post a message to a user@pod.org,
+    -x post *** -> post a message to a user@tree,
                    needs -u and a valid entry in users.list
 
     -x list     -> list available accounts from users.list
 
-    OBSOLETE (will be executed now on [ -x test ] if valid api-key is found
-    -x patest   -> pistos-api-test
-                   (as of 2012-02-24 this is only available
-                   @ diasp0ra.ca)
-
-
 
 OPTIONS:
-    -u usr@pod.org  use this account
+    -u usr@tree  use this account
 
-    -a aspect_id -> if you want to post via pistos_api,
-                    you might give an aspect_id that this post
-                    will be linked to
-                    (as of 2012-02-24 this is only available
-                    @ diasp0ra.ca)
-                    **
-                    default: public, if not given
 
     -t "message to send with \\n linebreaks\\n\\n  and #hashtags "
         must be more than 5 chars and enclosed with "..."
-
 
     -o json      -> export infos from -x test as json **
 
@@ -88,6 +74,17 @@ OPTIONS:
     -f [file]    -> use [file] as users.list, must be located in conf/
 
     -d  -> debug ON
+    
+    obsolete:
+    -a aspect_id -> if you want to post via pistos_api,
+                    you might give an aspect_id that this post
+                    will be linked to
+                    (as of 2012-02-24 this is only available
+                    @ diasp0ra.ca)
+                    **
+                    default: public, if not given
+
+
 
 CONFIG:
     conf/users.list    -> user/pw/api-key
@@ -105,7 +102,7 @@ def welcome():
     print """
 -----------------------------------------------
 
-APISPORA
+TREEPEE
 
 -----------------------------------------------
 
@@ -173,7 +170,7 @@ if __name__ == "__main__":
 
 
 
-    from diaspora_api import *
+    from libertree_api import *
 
     if uexec == "list" or action == "list":
         pd("reading in users_file %s " % users_file)
@@ -219,7 +216,7 @@ if __name__ == "__main__":
         if len(txt) < 5:
             txt = default_txt
 
-        res = api_post(usr, upw, txt, aspect_ids)
+        res = api_post(usr, uky, txt, api_version,  aspect_ids)
         if res == 0:
             print "[+] OK posting [ %s ]" % usr_get
         else:

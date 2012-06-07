@@ -12,7 +12,7 @@ import simplejson as json
 
 import httplib, urllib, urllib2, mechanize, cookielib, HTMLParser
 
-from apispora import debug, users, this_version, pistos_api_version, pd
+from treepee import debug, users, this_version, api_version, pd
 #import xml.etree.ElementTree as ElementTree
 #import xml.parsers.expat
 #from xml.dom.minidom import parseString
@@ -21,7 +21,7 @@ from apispora import debug, users, this_version, pistos_api_version, pd
 
 
 
-api_exec = "./apispora.py"
+api_exec = "./treepee.py"
 
 
 tmpdir="/tmp"
@@ -29,10 +29,10 @@ tmpdir="/tmp"
 # src: https://github.com/Pistos/diaspora/wiki/List-of-Pods-Running-This-Code
 list_of_pistos_pods = ['diasp0ra.ca', 'calisp0ra.ca', 'c0unt.org', 'diaspora.f4n.de', 'kosmospora.net']
 
-def api_test(user, pw, key):
+def api_test(user, token, key):
     """
 
-    call: api_test(user, pw, key)
+    call: api_test(user, token, key)
             set pw/key to 0 it unknown (int(0), not "0")
 
     this funtction check the webfinger-infos for a given diaspora-user
@@ -194,12 +194,12 @@ def get_user_info(user):
         return(0)
 
 
-def api_post(user, pw, msg, aspect_ids=['public']):
+def api_post(user, token, msg, api_version, aspect_ids=['public']):
     """
-    call: api_post(user, pw, msg, aspect_ids)
+    call: api_post(user, token, msg, aspect_ids)
 
-        user    : user@pod.org
-        pw      : account-pw
+        user    : user@tree
+        token   : user-api-token
         msg     : text as string, can be multilines with markup etc
 
     this function posts a message for given account,
@@ -216,107 +216,97 @@ def api_post(user, pw, msg, aspect_ids=['public']):
 
     usr_name = user.split("@")[0].strip()
     usr_host = user.split("@")[1].strip()
-    if pw == 0:
-        print "[-] ERROR ... empty password"
+    if token == 0:
+        print "[-] ERROR ... empty token"
         return(1000)
 
-
-    # starting to post -> using login/json via mechanize
-    br = mechanize.Browser()
-
-    # Cookie Jar
-    cj = cookielib.LWPCookieJar()
-    br.set_cookiejar(cj)
-
-    # Browser options
-    br.set_handle_equiv(True)
-    br.set_handle_gzip(False)
-    br.set_handle_redirect(True)
-    br.set_handle_referer(False)
-    br.set_handle_robots(False)
-
-    # Follows refresh 0 but not hangs on refresh > 0
-    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-
-    # Want debugging messages?
-    if debug == "yes":
-        br.set_debug_http(True)
-        br.set_debug_redirects(True)
-        br.set_debug_responses(True)
-
-    # User-Agent (this is cheating, ok?)
-    br.addheaders = [('Connection', 'keep-alive'), ('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
-
-
-    # Open some site, let's pick a random one, the first that pops in mind:
-    try:
-        r = br.open('https://%s/users/sign_in' % usr_host, timeout=10)
-    except mechanize.HTTPError, e:
-        print 'ERROR! The server couldn\'t fulfill the request.'
-        print 'Error code: ', e.code
-        return(e.code)
-    except mechanize.URLError, e:
-        print 'We failed to reach a server.'
-        print 'Reason: ', e.reason
-        return(404)
-
-
-    html = r.read()
-
-    csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
-    pd("csrf PURE    : %s" % csrf)
-    h =  HTMLParser.HTMLParser()
-    csrftoken = h.unescape(csrf)
-    pd("csrf eascaped: %s" % csrftoken)
-    # Show the response headers
-    pd(r.info())
-
-    # login
-    br.select_form(nr=0)
-    # Let's search
-    br.form['user[username]']='%s' % usr_name
-    br.form['user[password]']='%s' % pw
-    br.submit()
-    xd = br.response().info()
-
-    # diaspora_cookie
-    cookie = xd["set-cookie"].split(";")[0]
-
-    # checking now if i'm logged in (status 200)
-    # ok ... not really
-    r = br.open('https://%s/stream' % usr_host)
-    #pd(r.info())
-    html = r.read()
-    #print html
+    # obsolete since libertree ... we can haz api nao
+    
+    #~ # starting to post -> using login/json via mechanize
+    #~ br = mechanize.Browser()
+#~ 
+    #~ # Cookie Jar
+    #~ cj = cookielib.LWPCookieJar()
+    #~ br.set_cookiejar(cj)
+#~ 
+    #~ # Browser options
+    #~ br.set_handle_equiv(True)
+    #~ br.set_handle_gzip(False)
+    #~ br.set_handle_redirect(True)
+    #~ br.set_handle_referer(False)
+    #~ br.set_handle_robots(False)
+#~ 
+    #~ # Follows refresh 0 but not hangs on refresh > 0
+    #~ br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+#~ 
+    #~ # Want debugging messages?
+    #~ if debug == "yes":
+        #~ br.set_debug_http(True)
+        #~ br.set_debug_redirects(True)
+        #~ br.set_debug_responses(True)
+#~ 
+    #~ # User-Agent (this is cheating, ok?)
+    #~ br.addheaders = [('Connection', 'keep-alive'), ('User-agent', 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.0.1) Gecko/2008071615 Fedora/3.0.1-1.fc9 Firefox/3.0.1')]
+#~ 
+#~ 
+    #~ # Open some site, let's pick a random one, the first that pops in mind:
+    #~ try:
+        #~ r = br.open('https://%s/users/sign_in' % usr_host, timeout=10)
+    #~ except mechanize.HTTPError, e:
+        #~ print 'ERROR! The server couldn\'t fulfill the request.'
+        #~ print 'Error code: ', e.code
+        #~ return(e.code)
+    #~ except mechanize.URLError, e:
+        #~ print 'We failed to reach a server.'
+        #~ print 'Reason: ', e.reason
+        #~ return(404)
+#~ 
+#~ 
+    #~ html = r.read()
+#~ 
+    #~ csrf = html.split("""csrf-token" content=\"""")[1].split("\"")[0]
+    #~ pd("csrf PURE    : %s" % csrf)
+    #~ h =  HTMLParser.HTMLParser()
+    #~ csrftoken = h.unescape(csrf)
+    #~ pd("csrf eascaped: %s" % csrftoken)
+    #~ # Show the response headers
+    #~ pd(r.info())
+#~ 
+    #~ # login
+    #~ br.select_form(nr=0)
+    #~ # Let's search
+    #~ br.form['user[username]']='%s' % usr_name
+    #~ br.form['user[password]']='%s' % pw
+    #~ br.submit()
+    #~ xd = br.response().info()
+#~ 
+    #~ # diaspora_cookie
+    #~ cookie = xd["set-cookie"].split(";")[0]
+#~ 
+    #~ # checking now if i'm logged in (status 200)
+    #~ # ok ... not really
+    #~ r = br.open('https://%s/stream' % usr_host)
+    #~ #pd(r.info())
+    #~ html = r.read()
+    #~ #print html
     message = {
-        'aspect_ids' : aspect_ids,
-        "status_message": { 'text': """%s""" % msg},
-
+        'text' : msg
         #'authenticity_token': csrf,
         }
-    pd("cookie: %s" % cookie)
-    api_request = json.dumps(message)
-    url="/status_messages"
+    api_request = urllib.urlencode(message)
+    url="/api/v%s/posts/create?token=%s" % (api_version, token)
 
     pd(api_request)
     #params = urllib.urlencode(api_request)
     params = api_request
 
     pd("sending: %s :: %s ::-> %s " % (user, url, params))
-    headers = {"Content-type": "application/json; charset=UTF-8",
-                "Connection": "Keep-Alive, keep-alive, TE",
-                "User-Agent": "Apispora",
-                "Cookie": cookie,
-                'X-CSRF-Token': csrftoken,
-                }
-
-    time.sleep(1)
-    conn = httplib.HTTPSConnection(usr_host, 443, timeout=10)
+    conn = httplib.HTTPConnection(usr_host, 80, timeout=10)
     if debug == "yes":
         conn.set_debuglevel(9)
     else:
         conn.set_debuglevel(0)
-    conn.request("POST", url, params, headers)
+    conn.request("POST", url, params)
     try:
         response = conn.getresponse()
 
@@ -327,23 +317,24 @@ def api_post(user, pw, msg, aspect_ids=['public']):
     pd("%s ::: %s" % ( st, re))
 
 
-    # why is it redirected to /aspects or /?
-    if st != 302:
-        print "[-] ERROR - status-code (shall be 302): %s" % st
-        return(st)
-    rloc =  response.getheader('location')
-    if rloc.find("/users/sign_in") > -1:
-        print "[-] ERROR - redirect_location (shall be / or /aspects): %s" % rloc
-        return(2000)
+    # obsolete too
+    #~ # why is it redirected to /aspects or /?
+    #~ if st != 302:
+        #~ print "[-] ERROR - status-code (shall be 302): %s" % st
+        #~ return(st)
+    #~ rloc =  response.getheader('location')
+    #~ if rloc.find("/users/sign_in") > -1:
+        #~ print "[-] ERROR - redirect_location (shall be / or /aspects): %s" % rloc
+        #~ return(2000)
     data = response.read()
-    data
+    print data
     conn.close()
 
-    # logout finally
-    r = br.open('https://%s/users/sign_out' % usr_host)
-
-    stream = r.read()
-
+    #~ # logout finally
+    #~ r = br.open('https://%s/users/sign_out' % usr_host)
+#~ 
+    #~ stream = r.read()
+#~ 
 
 
     return(0)
