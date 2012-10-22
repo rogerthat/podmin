@@ -6,7 +6,7 @@
 #
 #
 
-this_version = "v0.1.8"
+this_version = "v0.1.10"
 
 
 import getpass, poplib, sys, time, socket, getopt
@@ -53,7 +53,7 @@ def print_debug(in_put):
 
 user = ""
 podmin_root_dir = "."
-apispora = "%s/apispora.py" % podmin_root_dir
+api = "%s/treehouse.py" % podmin_root_dir
 
 
 
@@ -65,7 +65,7 @@ EMAIL2API - a small interface to %s
             version: %s
 
 USAGE:
-    email2api.py -u [usr@pod.org]
+    email2api.py -u [usr@tree.org]
                     receive mails and post to user-account 
     
     email2api.py -l -> list available users (shortcut to 
@@ -80,7 +80,7 @@ OPTIONS:
                        default: %s
         -n          -> just simulate (no posting/no deletion of mails)
 
-""" % (this_version, apispora, apispora, debug)
+""" % (this_version, api, api, debug)
 
 
 i_time = int(time.time())
@@ -199,9 +199,9 @@ for i in range(numMessages):
                     try:
                         user = subj.split(post_identifier)[1].strip()
                     except:
-                        print """[-] ERROR while trying to identify user in subjetc [ %s ] """ % subj
+                        print """[-] ERROR while trying to identify user in subject [ %s ] """ % subj
                         continue
-                xe = """%s -x post -u %s -t "%s" """ % (apispora, user, msg)
+                xe = """%s -x post -u %s -t "%s" """ % (api, user, msg)
                 print_debug(xe)
 
 

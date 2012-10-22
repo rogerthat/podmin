@@ -204,7 +204,7 @@ for r in res:
         add_tag = "%s #veganer #vegan " % add_tag
     
     if bot =="spambot@c0unt.org":
-        add_tag = "#spambot"
+        add_tag = "#spambot #spam"
 
     
     msg = """**[[%s] %s](%s)**
