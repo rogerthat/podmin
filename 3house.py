@@ -36,7 +36,7 @@ def api_help():
 
     print """
 
-TREEPEE - some tools to test libertree-accounts or to post to
+Treehouse - some tools to test libertree-accounts or to post to
           libertree-accounts via api
 
 ATENCION! ** marked options/actions are **VERY** experimental
@@ -76,7 +76,8 @@ OPTIONS:
     -d  -> debug ON
     
     obsolete:
-    -V visibility -> might be "forest" or "internet", default: "forest"
+    -V visibility -> might be "forest" or "internet", 
+                     default: "forest"
 
 
 CONFIG:
@@ -95,7 +96,7 @@ def welcome():
     print """
 -----------------------------------------------
 
-TREEPEE
+TreehouseTools
 
 -----------------------------------------------
 
@@ -104,7 +105,7 @@ txt = ""
 usr_get = ""
 action = "test"
 uexec = ""
-aspect_ids = ['public']
+vis  = 'forest'
 
 
 
@@ -112,10 +113,10 @@ aspect_ids = ['public']
 if __name__ == "__main__":
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:a:f:")
+        opts, args = getopt.getopt(sys.argv[1:], "dlhu:t:x:V:f:")
     except getopt.GetoptError, err:
         # print help information and exit:
-        print " > ERROR on api / wrong option "
+        print " > ERROR on treehouse / wrong option "
         print str(err) # will print something like "option -a not recognized"
         api_help()
     
@@ -136,8 +137,8 @@ if __name__ == "__main__":
             users_file = "%s" % a
     
     
-        elif o == "-a":
-            aspect_ids = ['%s'] % a
+        elif o == "-V":
+            vis = '%s' % a
     
         elif o == "-x":
             action = "%s" % a.strip()
