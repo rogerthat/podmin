@@ -18,10 +18,10 @@ from treepee import debug, users, this_version, api_version, pd
 #from xml.dom.minidom import parseString
 #import tempfile as tmp
 
+tools_source="treehouse-tools"
 
 
-
-api_exec = "./treepee.py"
+#api_exec = "./treepee.py"
 
 
 tmpdir="/tmp"
@@ -290,7 +290,8 @@ def api_post(user, token, msg, api_version, aspect_ids=['public']):
     #~ html = r.read()
     #~ #print html
     message = {
-        'text' : msg
+        'text' : msg,
+        'source': "treehouse",
         #'authenticity_token': csrf,
         }
     api_request = urllib.urlencode(message)

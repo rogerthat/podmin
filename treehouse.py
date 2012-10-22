@@ -29,7 +29,7 @@ api_version="1" # for /fapi/v0/posts.json
 
 date = time.strftime("%Y-%m-%d - %H:%M", time.localtime(time.time()))
 
-default_txt = "testmessage\n-------------------------\n\ntreepee-test :: %s \n\n \n\n #testautomated #libertreeapi " % date
+default_txt = "testmessage\n-------------------------\n\ntreehouse-test :: %s \n\n \n\n #testautomated #libertreeapi " % date
 users_file = "users.list"
 
 def api_help():
@@ -76,14 +76,7 @@ OPTIONS:
     -d  -> debug ON
     
     obsolete:
-    -a aspect_id -> if you want to post via pistos_api,
-                    you might give an aspect_id that this post
-                    will be linked to
-                    (as of 2012-02-24 this is only available
-                    @ diasp0ra.ca)
-                    **
-                    default: public, if not given
-
+    -V visibility -> might be "forest" or "internet", default: "forest"
 
 
 CONFIG:
